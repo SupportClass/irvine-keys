@@ -25,14 +25,21 @@ cache:
     - $HOME/.cache/electron-builder
     - $HOME/.npm/_prebuilds
 
+before_install:
+  - npm install -g greenkeeper-lockfile@1
+
 install:
   - npm install -g bower
   - npm install
   - bower install
 
+before_script: greenkeeper-lockfile-update
+
 script:
   - npm test
   - npm run dist
+
+after_script: greenkeeper-lockfile-upload
 
 branches:
   except:
