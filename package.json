@@ -1,6 +1,6 @@
 {
   "name": "irvine-keys",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "with the keys goin, blammo",
   "devDependencies": {
     "ava": "^0.23.0",
