@@ -15,8 +15,8 @@ class AppDeviceXK80 extends Polymer.Element {
 					const keyArray = [];
 					const NUM_ROWS = 8;
 					const NUM_COLUMNS = 10;
-					for (let r = 0; r < NUM_ROWS; r++) {
-						for (let c = 0; c < NUM_COLUMNS; c++) {
+					for (let c = 0; c < NUM_COLUMNS; c++) {
+						for (let r = 0; r < NUM_ROWS; r++) {
 							keyArray.push({
 								index: keyArray.length,
 								gridX: c + 1,

@@ -1,7 +1,6 @@
 'use strict';
 
 const CONNECTION_PROMPT_WIDTH = 402;
-let mainWindow;
 let connectionWindow;
 
 // Native
@@ -14,14 +13,15 @@ const {BrowserWindow, ipcMain} = require('electron');
 const menu = require('./menu');
 const nodecg = require('./nodecg');
 const recentConnections = require('./recent-connections');
+const {references} = require('./util');
 
 module.exports.open = function () {
 	const height = calcConnectionWindowHeight(recentConnections);
 
 	// Calculate the position of the urlPromptWindow.
 	// It will appear in the center of the mainWindow.
-	const mainWindowPosition = mainWindow.getPosition();
-	const mainWindowSize = mainWindow.getSize();
+	const mainWindowPosition = references.mainWindow.getPosition();
+	const mainWindowSize = references.mainWindow.getSize();
 	const x = Math.round(mainWindowPosition[0] + (mainWindowSize[0] / 2) - (CONNECTION_PROMPT_WIDTH / 2));
 	const y = Math.round(mainWindowPosition[1] + (mainWindowSize[1] / 2) - (height / 2));
 

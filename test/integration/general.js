@@ -9,7 +9,7 @@ const {Application} = require('spectron');
 test.beforeEach(async t => {
 	t.context.app = new Application({
 		path: electronPath,
-		args: [path.resolve(__dirname, '../../app/server/main')]
+		args: [path.resolve(__dirname, '../../app')]
 	});
 
 	await t.context.app.start();

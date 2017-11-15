@@ -1,6 +1,6 @@
 'use strict';
 
-const NODECG_SERVER_URL = 'http://localhost:9090';
+const NODECG_SERVER_URL = 'http://fakeHost:9121';
 
 // Packages
 const mockery = require('mockery');
@@ -10,7 +10,16 @@ const test = require('ava');
 // Ours
 const MockUtil = require('../helpers/mock-util');
 
-mockery.registerMock('electron', require('electron-ipc-mock')());
+const {ipcMain: mockIpcMain, ipcRenderer: mockIpcRenderer} = require('electron-ipc-mock')();
+mockery.registerMock('electron', {
+	ipcMain: mockIpcMain,
+	ipcRenderer: mockIpcRenderer,
+	app: {
+		getName() {
+			return 'irvine-keys';
+		}
+	}
+});
 mockery.registerMock('socket.io-client', require('../helpers/mock-socket.io-client'));
 mockery.registerMock('./util', MockUtil);
 mockery.enable({warnOnUnregistered: false});
@@ -55,24 +64,6 @@ test.serial('#emit - sends to local EventEmitter listeners and to the main appli
 	t.deepEqual(MockUtil.sendToMainWindow.firstCall.args, ['nodecg:testEvent', 'foo', 'bar', 5]);
 });
 
-test.serial('#enumerateAvailableMethods rejects if there is no socket', async t => {
-	await t.throws(t.context.nodecg.enumerateAvailableMethods(), 'Socket is not connected');
-});
-
-test.serial('#enumerateAvailableMethods rejects if the socket is not connected', async t => {
-	const nodecg = t.context.nodecg;
-	nodecg.socket = {};
-	await t.throws(nodecg.enumerateAvailableMethods(), 'Socket is not connected');
-});
-
-test.serial('#enumerateAvailableMethods resolves with the list of available methods from the NodeCG server', async t => {
-	const nodecg = t.context.nodecg;
-	await nodecg.connect(NODECG_SERVER_URL);
-	sinon.stub(nodecg.socket, 'emit').yields(['foo', 'bar', 'baz']);
-	const availableMethods = await nodecg.enumerateAvailableMethods();
-	t.deepEqual(availableMethods, ['foo', 'bar', 'baz']);
-});
-
 test.serial('#invokeMethod rejects if there is no socket', async t => {
 	await t.throws(t.context.nodecg.invokeMethod(), 'Socket is not connected');
 });
@@ -94,7 +85,7 @@ test.serial('#invokeMethod rejects if an error was returned by the invocation', 
 	await nodecg.connect(NODECG_SERVER_URL);
 	nodecg.availableMethods = ['rejectsWithError'];
 	sinon.stub(nodecg.socket, 'emit')
-		.withArgs('irvine:invokeMethod', 'rejectsWithError')
+		.withArgs('invokeMethod', 'rejectsWithError')
 		.yields(new Error('boom'));
 	await t.throws(nodecg.invokeMethod('rejectsWithError'), 'boom');
 });
@@ -104,18 +95,9 @@ test.serial('#invokeMethod resolves with the response from the invocation', asyn
 	await nodecg.connect(NODECG_SERVER_URL);
 	nodecg.availableMethods = ['resolvesWithValue'];
 	sinon.stub(nodecg.socket, 'emit')
-		.withArgs('irvine:invokeMethod', 'resolvesWithValue')
+		.withArgs('invokeMethod', 'resolvesWithValue')
 		.yields(null, ['foo', 'bar', 'baz']);
 	t.deepEqual(await nodecg.invokeMethod('resolvesWithValue'), ['foo', 'bar', 'baz']);
-});
-
-test.serial('enumerates available methods after connection and reconnection', async t => {
-	const nodecg = t.context.nodecg;
-	const spy = sinon.spy(nodecg, 'enumerateAvailableMethods');
-	await nodecg.connect(NODECG_SERVER_URL);
-	t.true(spy.calledOnce);
-	nodecg.socket.emit('reconnect');
-	t.true(spy.calledTwice);
 });
 
 test.serial('sends pong events to the main application window', async t => {

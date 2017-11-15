@@ -37,10 +37,11 @@ if (recentConnections.length > 0) {
 	}
 }
 
-ipcMain.on('recentConnections:get', event => {
+ipcMain.on('recentConnections:getSync', event => {
 	event.returnValue = recentConnections;
 });
 
+const originalSort = recentConnections.sort.bind(recentConnections);
 module.exports = recentConnections;
 module.exports.touch = function (url) {
 	let recent = recentConnections.find(r => r.url === url);
@@ -63,8 +64,9 @@ module.exports.touch = function (url) {
 
 	menu.regenerate();
 };
+
 module.exports.sort = function () {
-	recentConnections.sort((a, b) => {
+	originalSort((a, b) => {
 		return b.lastOpened - a.lastOpened;
 	});
 };
