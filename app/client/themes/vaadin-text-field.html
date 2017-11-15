@@ -1,0 +1,47 @@
+<dom-module id="keys-vaadin-text-field-theme" theme-for="vaadin-text-field">
+	<template>
+		<style>
+			[part="label"] {
+				font-size: 0.875em;
+				font-weight: 600;
+				margin-bottom: 0.25em;
+			}
+
+			[part="input-field"] {
+				border: 1px solid rgba(0, 0, 0, 0.3);
+				background-color: rgba(0, 0, 0, 0.55);
+				padding: 0.25em;
+				border-radius: 5px;
+			}
+
+			:host([focused]) [part="input-field"] {
+				box-shadow: 0 0 2px 2px Highlight;
+			}
+
+			:host([invalid]) [part="input-field"] {
+				border-color: red;
+			}
+
+			:host([disabled]) {
+				opacity: 0.5;
+			}
+
+			[part="value"] {
+				border: 0;
+				background: transparent;
+				padding: 0;
+				margin: 0;
+				font: inherit;
+				outline: none;
+				box-shadow: none;
+				color: white;
+			}
+
+			[part="error-message"] {
+				font-size: 0.875em;
+				margin-top: 0.25em;
+				color: red;
+			}
+		</style>
+	</template>
+</dom-module>

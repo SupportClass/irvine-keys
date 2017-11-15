@@ -15,7 +15,7 @@
 
 		static get properties() {
 			return {
-
+				selectedKeys: Array
 			};
 		}
 

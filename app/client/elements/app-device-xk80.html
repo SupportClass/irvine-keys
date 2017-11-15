@@ -1,0 +1,45 @@
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="app-key.html">
+
+<dom-module id="app-device-xk80">
+	<template>
+		<style>
+			:host {
+				display: block;
+				position: relative;
+				width: 749px;
+				height: 657px;
+				background: url("../img/xk80-background.png");
+				--key-size: 58px;
+				--gap-size: 4px;
+			}
+
+			#keys {
+				position: absolute;
+				display: grid;
+				top: 81px;
+				left: 67px;
+				width: 616px;
+				height: 492px;
+				grid-template-columns: var(--key-size);
+				grid-template-rows: var(--key-size);
+				grid-gap: var(--gap-size);
+				filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.81))
+			}
+		</style>
+
+		<iron-selector id="keys" multi selectable="app-key" selected-values="{{selectedKeyIndicies}}">
+			<template is="dom-repeat" items="[[keys]]" as="key">
+				<app-key
+					index="[[key.index]]"
+					grid-x="[[key.gridX]]"
+					grid-y="[[key.gridY]]"
+					grid-width="[[key.gridWidth]]"
+					grid-height="[[key.gridHeight]]">
+				</app-key>
+			</template>
+		</iron-selector>
+	</template>
+
+	<script src="app-device-xk80.js"></script>
+</dom-module>

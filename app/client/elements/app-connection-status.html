@@ -1,0 +1,41 @@
+<dom-module id="app-connection-status">
+	<template>
+		<style>
+			:host {
+				width: 243px;
+				height: 38px;
+				border-radius: 5px;
+				box-sizing: border-box;
+				@apply --layout-horizontal;
+				@apply --layout-center-center;
+			}
+
+			:host([status="disconnected"]) {
+				border: 2px solid #ff0000;
+				background-color: #6f1f22;
+			}
+
+			:host([status="connecting"]) {
+				border: 2px solid #ffff00;
+				background-color: #76750b;
+			}
+
+			:host([status="connected"]) {
+				border: 2px solid #6dcff6;
+				background-color: #022845;
+			}
+
+			#label {
+				text-transform: capitalize;
+				color: #ffffff;
+				font-size: 24px;
+				font-weight: 700;
+				letter-spacing: 0.3px;
+			}
+		</style>
+
+		<div id="label">[[status]]</div>
+	</template>
+
+	<script src="app-connection-status.js"></script>
+</dom-module>

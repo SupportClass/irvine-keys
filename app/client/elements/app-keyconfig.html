@@ -1,0 +1,72 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="app-keyconfig-mode.html">
+
+<dom-module id="app-keyconfig">
+	<template>
+		<style include="iron-flex iron-flex-alignment">
+			:host {
+				display: block;
+				color: white;
+			}
+
+			#selectedKeyLabel {
+				font-size: 38px;
+				font-weight: 700;
+				letter-spacing: 0.80px;
+				margin-top: -3px;
+			}
+
+			#ungroup {
+				width: 140px;
+				height: 32px;
+				padding: 0;
+				border-radius: 5px;
+				background-color: rgba(255, 255, 255, 0.5);
+				color: black;
+				font-size: 18px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.09px;
+				@apply --layout-horizontal;
+				@apply --layout-center-center;
+			}
+		</style>
+
+		<div class="layout horizontal end justified" style="margin-bottom: 15px;">
+			<div class="layout vertical">
+				<div style="font-size: 16px; letter-spacing: 0.5px;">Configuration for</div>
+				<div id="selectedKeyLabel">[[_computeSelectedKeyLabel(selectedKeys)]]</div>
+			</div>
+
+			<paper-button
+				id="ungroup"
+				on-tap="ungroup"
+				on-mouseenter="raiseUngroupButton"
+				on-mouseleave="lowerUngroupButton">
+				Ungroup
+			</paper-button>
+		</div>
+
+		<iron-selector id="modeSelector" activate-event="select" selected-attribute="selected">
+			<app-keyconfig-mode
+				label="Scene Preview"
+				options="[[availableScenes]]"
+				allow-custom-value>
+			</app-keyconfig-mode>
+
+			<app-keyconfig-mode
+				label="Bundle Method"
+				options="[[availableMethods]]">
+			</app-keyconfig-mode>
+
+			<app-keyconfig-mode
+				label="Disabled">
+			</app-keyconfig-mode>
+		</iron-selector>
+	</template>
+
+	<script src="app-keyconfig.js"></script>
+</dom-module>

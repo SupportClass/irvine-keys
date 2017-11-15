@@ -1,0 +1,44 @@
+<dom-module id="app-radio-button">
+	<template>
+		<style>
+			:host {
+				width: 62px;
+				height: 62px;
+				background: rgba(66, 70, 77, 0.55);
+				padding: 10px;
+				display: block;
+				box-sizing: border-box;
+			}
+
+			:host(:not([disabled])) {
+				cursor: pointer;
+			}
+
+			#center {
+				background: rgba(0, 0, 0, 0.55);
+				padding: 5px;
+			}
+
+			#fill {
+				background-color: rgba(255, 255, 255, 0.55);
+			}
+
+			#center,
+			#fill {
+				height: 100%;
+				box-sizing: border-box;
+				border-radius: 5px;
+			}
+
+			:host(:not([checked])) #fill {
+				display: none;
+			}
+		</style>
+
+		<div id="center">
+			<div id="fill"></div>
+		</div>
+	</template>
+
+	<script src="app-radio-button.js"></script>
+</dom-module>

@@ -20,6 +20,8 @@
     "polymer": "Polymer/polymer#^2.2.0",
     "font-roboto": "PolymerElements/font-roboto#^1.0.3",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.1",
-    "iron-selector": "PolymerElements/iron-selector#^2.0.0"
+    "iron-selector": "PolymerElements/iron-selector#^2.0.0",
+    "vaadin-combo-box": "Vaadin/vaadin-combo-box#^3.0.1",
+    "paper-button": "PolymerElements/paper-button#^2.0.0"
   }
 }

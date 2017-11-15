@@ -1,8 +1,11 @@
+<link rel="import" href="../themes/all.html">
 <link rel="import" href="../bower_components/font-roboto/roboto.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="app-device-xk24.html">
+<link rel="import" href="app-connection-status.html">
+<link rel="import" href="app-device-xk80.html">
+<link rel="import" href="app-keyconfig.html">
 
 <dom-module id="keys-app">
 	<template>
@@ -13,20 +16,30 @@
 				top: 0;
 				left: 0;
 				font-family: Roboto, sans-serif;
-				user-select: none;
 				width: 100%;
 				height: 100%;
-				background-image: linear-gradient(to top, #16181a 0%, #202225 100%);
+				background-image: linear-gradient(to bottom, #202225 0%, #16181a 100%);
 				@apply --layout-horizontal;
+			}
+
+			app-connection-status {
+				margin-top: 35px;
+				margin-bottom: -18px;
+				z-index: 1;
+			}
+
+			app-keyconfig {
+				padding-top: 99px;
+				padding-left: 3px;
 			}
 		</style>
 
-		<div class="layout vertical">
+		<div class="layout vertical center" style="padding-left: 8px;">
 			<app-connection-status></app-connection-status>
-			<app-device-xk24></app-device-xk24>
+			<app-device-xk80 selected-keys="{{selectedKeys}}"></app-device-xk80>
 		</div>
 
-		<app-keyconfig></app-keyconfig>
+		<app-keyconfig selected-keys="[[selectedKeys]]"></app-keyconfig>
 	</template>
 
 	<script src="keys-app.js"></script>

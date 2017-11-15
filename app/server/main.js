@@ -8,11 +8,6 @@ const windowStateKeeper = require('electron-window-state');
 const {app, BrowserWindow} = require('electron');
 const log = require('electron-log');
 
-// TODO: remove this
-process.on('unhandledRejection', r => {
-	console.error('UNHANDLED PROMISE REJECTION:\n', r.stack ? r.stack : r);
-});
-
 // Ours
 const {version, references} = require('./util');
 
@@ -34,8 +29,8 @@ app.on('ready', async () => {
 	mainWindow = new BrowserWindow({
 		x: mainWindowState.x,
 		y: mainWindowState.y,
-		width: 874,
-		height: 600,
+		width: 1240,
+		height: 712,
 		useContentSize: true,
 		resizable: false,
 		frame: true,
