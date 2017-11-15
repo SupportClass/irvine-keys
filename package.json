@@ -1,0 +1,103 @@
+{
+  "name": "irvine-keys",
+  "version": "0.0.0",
+  "description": "with the keys goin, blammo",
+  "devDependencies": {
+    "ava": "^0.23.0",
+    "electron": "^1.7.9",
+    "electron-builder": "^19.45.1",
+    "electron-ipc-mock": "0.0.3",
+    "eslint": "^4.11.0",
+    "eslint-config-xo": "^0.19.0",
+    "eslint-plugin-ava": "^4.2.2",
+    "eslint-plugin-html": "^3.2.2",
+    "mock-socket": "^7.1.0",
+    "mockery": "^2.1.0",
+    "nyc": "^11.3.0",
+    "sinon": "^4.1.2",
+    "spectron": "^3.7.2",
+    "standard-version": "^4.2.0"
+  },
+  "optionalDependencies": {
+    "7zip-bin-mac": "^1.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/supportclass/irvine-keys.git"
+  },
+  "author": "Alex Van Camp <email@alexvan.camp>",
+  "build": {
+    "appId": "org.supportclass.irvine-keys",
+    "productName": "Irvine Keys",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "supportclass",
+        "repo": "irvine-keys"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "dmg": {
+      "iconSize": 128,
+      "contents": [
+        {
+          "x": 425,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 120,
+          "y": 200,
+          "type": "file"
+        }
+      ]
+    },
+    "linux": {
+      "category": "Audio",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  },
+  "scripts": {
+    "pretest": "npm run static",
+    "test": "nyc --all --reporter=html ava",
+    "static": "eslint app/**/*.js app/**/*.html",
+    "postinstall": "electron-builder install-app-deps",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "start": "electron app/server/main.js --enable-logging",
+    "prerelease": "npm t",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags"
+  },
+  "standard-version": {
+    "skip": {
+      "bump": true,
+      "tag": true
+    }
+  },
+  "ava": {
+    "files": [
+      "test/unit/*.js",
+      "test/integration/*.js"
+    ],
+    "source": [
+      "app/server/**/*.js"
+    ]
+  },
+  "nyc": {
+    "exclude": [
+      "**/bower_components",
+      "test",
+      "coverage",
+      "build",
+      "dist",
+      ".nyc_output"
+    ]
+  }
+}
