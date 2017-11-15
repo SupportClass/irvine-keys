@@ -19,7 +19,8 @@
     "standard-version": "^4.2.0"
   },
   "optionalDependencies": {
-    "7zip-bin-mac": "^1.0.1"
+    "7zip-bin-mac": "^1.0.1",
+    "7zip-bin-linux": "^1.1.0"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,7 @@
   },
   "author": "Alex Van Camp <email@alexvan.camp>",
   "build": {
-    "appId": "org.supportclass.irvine-keys",
+    "appId": "org.lange.irvine-keys",
     "productName": "Irvine Keys",
     "publish": [
       {
