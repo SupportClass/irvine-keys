@@ -6,11 +6,11 @@ const EventEmitter = require('events');
 // Packages
 const equal = require('fast-deep-equal');
 const log = require('electron-log');
-const socketIOClient = require('socket.io-client');
+const WebSocket = require('./reconnecting-websocket');
 const {ipcMain} = require('electron');
 const {sendToMainWindow} = require('./util');
 
-class NodeCG extends EventEmitter {
+class RemoteClient extends EventEmitter {
 	constructor() {
 		super();
 		this.socket = null;
@@ -19,44 +19,28 @@ class NodeCG extends EventEmitter {
 
 	connect(url) {
 		if (this.socket) {
+			// Close any existing socket before attempting to connect a new one.
 			this.disconnect();
 		}
 
-		if (!url.endsWith('/')) {
-			url += '/';
-		}
-
-		url = `${url}irvine-keys`;
 		log.debug('Attempting to connect to:', url);
-		this.socket = socketIOClient(url);
+		this.socket = new WebSocket();
 
-		// Socket.IO events
+		// WebSocket events.
 		this.socket.on('connect', () => {
 			log.debug('Connected.');
-		});
-
-		/* eslint-disable no-unused-vars */
-		this.socket.on('connect_error', error => {
-			log.error('Failed to connect:', error);
-		});
-
-		this.socket.on('connect_timeout', timeout => {
-			log.error('Connection timed out:', timeout);
 		});
 
 		this.socket.on('reconnect', attemptNumber => {
 			log.debug('Reconnected on attempt %d.', attemptNumber);
 		});
 
-		this.socket.on('reconnect_attempt', attemptNumber => {});
-
-		this.socket.on('reconnect_error', error => {
-			log.error('Failed to reconnect:', error);
+		this.socket.on('disconnect', reason => {
+			log.debug('Disconnected, reason:', reason);
 		});
 
-		this.socket.on('disconnect', reason => {
-			// reason is either: 'io server disconnect' or 'io client disconnect'
-			log.debug('Disconnected, reason:', url, reason);
+		this.socket.on('close', (code, reason) => {
+			log.debug('Intentionally closed (code: %s, reason: %s)', code, reason);
 		});
 
 		this.socket.on('error', error => {
@@ -64,10 +48,11 @@ class NodeCG extends EventEmitter {
 		});
 
 		this.socket.on('pong', latency => {
-			sendToMainWindow('nodecg:pong', latency);
+			log.debug(latency, latency.toString());
+			sendToMainWindow('remote:pong', latency);
 		});
-		/* eslint-enable no-unused-vars */
 
+		// Protocol events.
 		this.socket.on('availableMethods', availableMethods => {
 			if (!equal(availableMethods, this.availableMethods)) {
 				this.availableMethods = availableMethods;
@@ -84,9 +69,7 @@ class NodeCG extends EventEmitter {
 			}
 		});
 
-		return new Promise(resolve => {
-			this.socket.once('connect', resolve);
-		});
+		return this.socket.open(url);
 	}
 
 	disconnect() {
@@ -94,22 +77,14 @@ class NodeCG extends EventEmitter {
 			return;
 		}
 
-		this.socket.disconnect();
-		this.socket.removeAllListeners('connect');
-		this.socket.removeAllListeners('connect_error');
-		this.socket.removeAllListeners('connect_timeout');
-		this.socket.removeAllListeners('reconnect');
-		this.socket.removeAllListeners('reconnect_attempt');
-		this.socket.removeAllListeners('reconnect_error');
-		this.socket.removeAllListeners('disconnect');
-		this.socket.removeAllListeners('error');
-		this.socket.removeAllListeners('pong');
+		this.socket.close();
+		this.socket.removeAllListeners();
 		this.socket = null;
 	}
 
 	emit(eventName, ...restArgs) {
 		super.emit(eventName, ...restArgs);
-		sendToMainWindow(`nodecg:${eventName}`, ...restArgs);
+		sendToMainWindow(`remote:${eventName}`, ...restArgs);
 	}
 
 	invokeMethod(methodName) {
@@ -122,7 +97,7 @@ class NodeCG extends EventEmitter {
 				return reject(new Error(`Method "${methodName}" is not one of the availableMethods`));
 			}
 
-			this.socket.emit('invokeMethod', methodName, (error, response) => {
+			this.socket.send('invokeMethod', methodName, (error, response) => {
 				if (error) {
 					return reject(error);
 				}
@@ -142,7 +117,7 @@ class NodeCG extends EventEmitter {
 				return reject(new Error(`Scene "${sceneName}" is not one of the availableScenes`));
 			}
 
-			this.socket.emit('previewScene', sceneName, (error, response) => {
+			this.socket.send('previewScene', sceneName, (error, response) => {
 				if (error) {
 					return reject(error);
 				}
@@ -153,15 +128,15 @@ class NodeCG extends EventEmitter {
 	}
 }
 
-const singletonInstance = new NodeCG();
-ipcMain.on('nodecg:getAvailableMethodsSync', event => {
+const singletonInstance = new RemoteClient();
+ipcMain.on('remote:getAvailableMethodsSync', event => {
 	/* istanbul ignore next: this is annoying to test and it's simple enough that we know it just works */
 	event.returnValue = singletonInstance.availableMethods;
 });
-ipcMain.on('nodecg:getAvailableScenesSync', event => {
+ipcMain.on('remote:getAvailableScenesSync', event => {
 	/* istanbul ignore next: this is annoying to test and it's simple enough that we know it just works */
 	event.returnValue = singletonInstance.availableScenes;
 });
 
 module.exports = singletonInstance;
-module.exports.__NodeCGClass__ = NodeCG; // Used for testing.
+module.exports.__NodeCGClass__ = RemoteClient; // Used for testing.

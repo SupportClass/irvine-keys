@@ -11,7 +11,6 @@
     "eslint-config-xo": "^0.19.0",
     "eslint-plugin-ava": "^4.2.2",
     "eslint-plugin-html": "^4.0.0",
-    "mock-socket": "^7.1.0",
     "mockery": "^2.1.0",
     "nyc": "^11.3.0",
     "sinon": "^4.1.2",
@@ -100,5 +99,6 @@
       "dist",
       ".nyc_output"
     ]
-  }
+  },
+  "dependencies": {}
 }

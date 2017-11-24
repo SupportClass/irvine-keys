@@ -1,6 +1,11 @@
 <dom-module id="keys-vaadin-text-field-theme" theme-for="vaadin-text-field">
 	<template>
 		<style>
+			:host {
+				color: white;
+				font-weight: 700;
+			}
+
 			[part="label"] {
 				font-size: 0.875em;
 				font-weight: 600;
@@ -9,9 +14,10 @@
 
 			[part="input-field"] {
 				border: 1px solid rgba(0, 0, 0, 0.3);
-				background-color: rgba(0, 0, 0, 0.55);
-				padding: 0.25em;
+				background-color: var(--vaadin-text-field-background-color, rgba(0, 0, 0, 0.55));
 				border-radius: 5px;
+				padding: var(--vaadin-text-field-padding, 0.25em);
+				height: var(--vaadin-text-field-height, auto);
 			}
 
 			:host([focused]) [part="input-field"] {

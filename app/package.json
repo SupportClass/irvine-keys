@@ -4,14 +4,21 @@
   "description": "with the keys goin, blammo",
   "homepage": "https://github.com/supportclass/irvine-keys",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "electron-debug": "^1.0.0",
     "electron-is-dev": "^0.3.0",
     "electron-log": "^2.2.7",
     "electron-updater": "^2.8.9",
     "electron-window-state": "^4.1.1",
+    "elgato-stream-deck": "^1.2.0",
     "fast-deep-equal": "^1.0.0",
+    "grpc": "^1.7.1",
+    "joi": "^13.0.2",
     "lodash.debounce": "^4.0.8",
-    "socket.io-client": "^2.0.4",
+    "node-hid": "^0.5.7",
+    "redux": "^3.7.2",
+    "redux-electron-store": "^0.4.1",
+    "usb-detection": "^1.4.2",
     "xkeys": "0.0.4"
   },
   "repository": {

@@ -11,7 +11,7 @@ const {BrowserWindow, ipcMain} = require('electron');
 
 // Ours
 const menu = require('./menu');
-const nodecg = require('./nodecg');
+const RpcClient = require('./rpc-client');
 const recentConnections = require('./recent-connections');
 const {references} = require('./util');
 

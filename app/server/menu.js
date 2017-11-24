@@ -12,7 +12,7 @@ const {app, BrowserWindow, Menu, shell} = require('electron');
 // Ours
 const connectionWindow = require('./connection-window');
 const recentConnections = require('./recent-connections');
-const nodecg = require('./nodecg');
+const nodecg = require('./remote-client');
 const {references} = require('./util');
 
 let aboutWindow;
@@ -31,7 +31,7 @@ function regenerateMenu() {
 			label: 'Open Recent',
 			submenu: recentConnections.map(r => {
 				return {
-					label: `${r.ip}:${r.port}`,
+					label: r.url,
 					click() {
 						nodecg.connect(r.url);
 						recentConnections.touch(r.url); // Calls `menu.regenerate` automatically.

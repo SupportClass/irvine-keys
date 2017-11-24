@@ -25,7 +25,7 @@ mockery.registerMock('./util', MockUtil);
 mockery.enable({warnOnUnregistered: false});
 
 // The unit under test. Must be required after we register our mocks.
-const singletonNodecg = require('../../app/server/nodecg');
+const singletonNodecg = require('../../app/server/remote-client');
 
 test.beforeEach(t => {
 	MockUtil.sendToMainWindow.reset();

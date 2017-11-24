@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="app-connection-status.html">
-<link rel="import" href="app-device-xk80.html">
+<link rel="import" href="app-device.html">
 <link rel="import" href="app-keyconfig.html">
 
 <dom-module id="keys-app">
@@ -19,13 +19,19 @@
 				width: 100%;
 				height: 100%;
 				background-image: linear-gradient(to bottom, #202225 0%, #16181a 100%);
+				/*background: url("../img/app-reference.png");*/
 				@apply --layout-horizontal;
 			}
 
 			app-connection-status {
-				margin-top: 35px;
-				margin-bottom: -18px;
+				position: absolute;
 				z-index: 1;
+				top: 35px;
+				right: 35px;
+			}
+
+			app-device {
+				margin-top: 35px;
 			}
 
 			app-keyconfig {
@@ -34,12 +40,20 @@
 			}
 		</style>
 
-		<div class="layout vertical center" style="padding-left: 8px;">
+		<div class="layout vertical center" style="position: relative; padding-left: 8px;">
 			<app-connection-status></app-connection-status>
-			<app-device-xk80 selected-keys="{{selectedKeys}}"></app-device-xk80>
+			<app-device
+				keys="[[keys]]"
+				selected-keys="{{selectedKeys}}"
+				row-size="{{rowSize}}"
+				column-size="{{columnSize}}">
+			</app-device>
 		</div>
 
-		<app-keyconfig selected-keys="[[selectedKeys]]"></app-keyconfig>
+		<app-keyconfig
+			selected-keys="[[selectedKeys]]"
+			on-group-keys="_groupKeys">
+		</app-keyconfig>
 	</template>
 
 	<script src="keys-app.js"></script>

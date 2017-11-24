@@ -35,16 +35,27 @@
 			});
 		}
 
-		raiseUngroupButton() {
-			this.$.ungroup.raised = true;
+		raiseButton(e) {
+			e.target.raised = true;
+			console.log(e.target);
 		}
 
-		lowerUngroupButton() {
-			this.$.ungroup.raised = false;
+		lowerButton(e) {
+			e.target.raised = false;
 		}
 
 		ungroup() {
 			console.log('ungroup method not yet implemented');
+		}
+
+		group() {
+			this.dispatchEvent(new CustomEvent('group-keys', {
+				detail: {
+					keys: this.selectedKeys
+				},
+				bubbles: false,
+				composed: false
+			}));
 		}
 
 		_computeSelectedKeyLabel(selectedKeys) {
@@ -57,6 +68,22 @@
 			}
 
 			return `${selectedKeys.length} Keys`;
+		}
+
+		_areMultipleKeysSelected(selectedKeys) {
+			return selectedKeys && selectedKeys.length > 1;
+		}
+
+		_formatSelectedKeys(selectedKeys) {
+			if (selectedKeys && selectedKeys.length > 0) {
+				return selectedKeys.map(k => k.index + 1).join(', ');
+			}
+
+			return 'No keys selected.';
+		}
+
+		_isGroupRectangular(selectedKeys) {
+
 		}
 	}
 

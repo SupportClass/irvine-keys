@@ -19,19 +19,44 @@
 				margin-top: -3px;
 			}
 
+			#ungroup,
+			#group {
+				background-color: rgba(255, 255, 255, 0.5);
+				border-radius: 5px;
+				color: black;
+				font-weight: 700;
+				text-transform: uppercase;
+				@apply --layout-horizontal;
+				@apply --layout-center-center;
+			}
+
 			#ungroup {
 				width: 140px;
 				height: 32px;
 				padding: 0;
-				border-radius: 5px;
-				background-color: rgba(255, 255, 255, 0.5);
-				color: black;
 				font-size: 18px;
-				font-weight: 700;
-				text-transform: uppercase;
 				letter-spacing: 0.09px;
-				@apply --layout-horizontal;
-				@apply --layout-center-center;
+				margin-right: 0;
+			}
+
+			#group {
+				width: 310px;
+				height: 50px;
+				font-size: 24px;
+				letter-spacing: 0.12px;
+				margin-left: 0;
+			}
+
+			#selectedKeys {
+				font-size: 30px;
+				font-weight: 700;
+				line-height: 41px;
+				letter-spacing: 0.15px;
+				margin-top: 12px;
+			}
+
+			[hidden] {
+				display: none !important;
 			}
 		</style>
 
@@ -44,13 +69,18 @@
 			<paper-button
 				id="ungroup"
 				on-tap="ungroup"
-				on-mouseenter="raiseUngroupButton"
-				on-mouseleave="lowerUngroupButton">
+				on-mouseenter="raiseButton"
+				on-mouseleave="lowerButton"
+				hidden="[[_areMultipleKeysSelected(selectedKeys)]]">
 				Ungroup
 			</paper-button>
 		</div>
 
-		<iron-selector id="modeSelector" activate-event="select" selected-attribute="selected">
+		<iron-selector
+			id="modeSelector"
+			activate-event="select"
+			selected-attribute="selected"
+			hidden="[[_areMultipleKeysSelected(selectedKeys)]]">
 			<app-keyconfig-mode
 				label="Scene Preview"
 				options="[[availableScenes]]"
@@ -66,6 +96,19 @@
 				label="Disabled">
 			</app-keyconfig-mode>
 		</iron-selector>
+
+		<div class="layout vertical" hidden="[[!_areMultipleKeysSelected(selectedKeys)]]">
+			<paper-button
+				id="group"
+				on-tap="group"
+				on-mouseenter="raiseButton"
+				on-mouseleave="lowerButton"
+				disabled="[[!_isGroupRectangular(selectedKeys)]]">
+				Group Keys
+			</paper-button>
+
+			<div id="selectedKeys">[[_formatSelectedKeys(selectedKeys)]]</div>
+		</div>
 	</template>
 
 	<script src="app-keyconfig.js"></script>
