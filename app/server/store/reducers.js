@@ -4,17 +4,46 @@
 const actions = require('./actions');
 
 const REDUCERS = {
+	profile(state = {}, action) {
+		switch (action.type) {
+			case actions.SAVE_PROFILE:
+				return {
+					...state,
+					filePath: action.filePath,
+					hasUnsavedChanges: false
+				};
+			case actions.LOAD_PROFILE:
+				return {
+					...state,
+					filePath: action.filePath,
+					hasUnsavedChanges: false
+				};
+			default:
+				return state;
+		};
+	},
 	detectedDevices(state = [], action) {
 		switch (action.type) {
 			case actions.UPDATE_DETECTED_DEVICES:
-				return action.devices;
+				return action.products;
+			default:
+				return state;
+		}
+	},
+	selectedDevice(state = null, action) {
+		switch (action.type) {
+			case actions.SELECT_DEVICE: {
+				const device = {...action};
+				delete device.type;
+				return device;
+			}
 			default:
 				return state;
 		}
 	},
 	keyStates(state = [], action) {
 		switch (action.type) {
-			case actions.INITIALIZE_KEY_STATES:
+			case actions.SELECT_DEVICE:
 				return action.keyIds.map(keyId => {
 					return {
 						identifier: keyId,
@@ -83,6 +112,100 @@ const REDUCERS = {
 			default:
 				return state;
 		}
+	},
+	keyConfigs(state = [], action) {
+		switch (action.type) {
+			case actions.SELECT_DEVICE:
+				return action.keyIds.map(keyId => {
+					return {
+						id: keyId,
+						label: '',
+						procedureName: undefined,
+						procedureArgs: []
+					};
+				});
+			case actions.ASSIGN_PROCEDURE_NAME:
+				return updateObjectInArray(state, {
+					id: action.keyId,
+					newProps: {
+						procedureName: action.procedureName,
+						procedureArgs: []
+					}
+				});
+			case actions.ASSIGN_PROCEDURE_ARGS:
+				return updateObjectInArray(state, {
+					id: action.keyId,
+					newProps: {
+						procedureArgs: action.procedureArgs
+					}
+				});
+			case actions.DISABLE_KEY:
+				return updateObjectInArray(state, {
+					id: action.keyId,
+					newProps: {
+						disabled: true
+					}
+				});
+			case actions.ENABLE_KEY:
+				return updateObjectInArray(state, {
+					id: action.keyId,
+					newProps: {
+						disabled: false
+					}
+				});
+			default:
+				return state;
+		}
+	},
+	keyMerges(state = [], action) {
+		switch (action.type) {
+			case actions.MERGE_KEYS: {
+				// Build the array of keyIds which will be contained in this merge.
+				// To do this, we have to check to see if any of the provided keyIds are
+				// already contained in existing merges.
+				const keyIds = action.keyIds.reduce((accumulator, currentValue) => {
+					// Search for an existing merge for this child key.
+					// If found, concat all keys of that merge.
+					// Else, just push the lone key id.
+					const foundMerge = state.find(merge => merge.rootKeyId === currentValue);
+					return foundMerge ?
+						accumulator.concat(foundMerge.keyIds) :
+						accumulator.concat([currentValue]);
+				}, []);
+
+				// If the provided root key is already in a merge, update that merge.
+				const existingMergeIndex = state.findIndex(merge => merge.rootKeyId === action.rootKeyId);
+				if (existingMergeIndex >= 0) {
+					const existingMerge = state[existingMergeIndex];
+					return updateObjectInArray(state, {
+						idField: 'rootKeyId',
+						id: action.rootKeyId,
+						newProps: {
+							keyIds: [
+								...existingMerge.keyIds,
+								...keyIds
+							]
+						}
+					});
+				}
+
+				// Else, create a new merge and append it to the end of the array.
+				return [
+					...state,
+					{
+						rootKeyId: action.rootKeyId,
+						keyIds
+					}
+				];
+			}
+			case actions.SPLIT_KEY:
+				return removeObjectFromArray(state, {
+					idField: 'rootKeyId',
+					id: action.rootKeyId
+				});
+			default:
+				return state;
+		}
 	}
 };
 
@@ -103,6 +226,13 @@ function updateObjectInArray(array, {
 	};
 
 	return newArray;
+}
+
+function removeObjectFromArray(array, {
+	idField = 'id',
+	id
+}) {
+	return array.filter(item => item[idField] !== id);
 }
 
 Object.freeze(REDUCERS);

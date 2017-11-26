@@ -9,7 +9,7 @@ const {sleep} = require('../../util');
 
 class XkeysInterface extends BaseDeviceInterface {
 	// The small black circular button on the rear of an X-keys device.
-	static get PROGRAMMING_KEY_INDEX() {
+	static get PROGRAMMING_KEY_ID() {
 		return 'PS';
 	}
 

@@ -16,6 +16,7 @@
     "joi": "^13.0.2",
     "lodash.debounce": "^4.0.8",
     "node-hid": "^0.5.7",
+    "protobufjs": "~6.8.0",
     "redux": "^3.7.2",
     "redux-electron-store": "^0.4.1",
     "usb-detection": "^1.4.2",

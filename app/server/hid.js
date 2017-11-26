@@ -5,7 +5,7 @@ const KEY_COOLDOWN_DURATION = 50; // Duration (in ms) before a key can be used a
 // Packages
 const debounce = require('lodash.debounce');
 const log = require('electron-log');
-const BB = require('bluebird'); // TODO: Remove once Electron uses V8 v6.3.165+, which adds Promise.finally natively.
+const BB = require('bluebird'); // TODO: Remove once Electron uses V8 v6.3.165+, which natively adds Promise.finally()
 
 // Ours
 const actions = require('./store/actions');
@@ -21,10 +21,16 @@ const cooldownTimeouts = new Map();
 const vendors = new Map([
 	[0x5F3, {
 		name: 'PI Engineering, Inc.',
-		devices: new Map([
+		products: new Map([
 			[0x0405, {
 				name: 'X-keys XK-24',
 				usage: 1,
+				columns: 4,
+				rows: 6,
+				supportsKeyMerging: true,
+				get keys() {
+					return [];
+				},
 				InterfaceClass: XkeysInterface
 			}],
 			[0x0441, {
@@ -36,7 +42,7 @@ const vendors = new Map([
 	}],
 	[0x0fd9, {
 		name: 'Elgato Systems GmbH',
-		devices: new Map([
+		products: new Map([
 			[0x0060, {
 				name: 'Stream Deck',
 				usage: 1,
@@ -45,6 +51,19 @@ const vendors = new Map([
 		])
 	}]
 ]);
+
+const supportedDevices = [];
+vendors.forEach((vendorId, vendor) => {
+	vendor.products.forEach((productId, product) => {
+		supportedDevices.push({
+			vendorId,
+			vendorName: vendor.name,
+			productId,
+			productName: product.name
+		});
+	});
+});
+store.dispatch(actions.setSupportedDevices(supportedDevices));
 
 const sendPressedKeysToMainWindow = debounce(() => {
 	sendToMainWindow(
@@ -63,33 +82,39 @@ function selectNewDevice({path, vendorId, productId}) {
 
 	const selectedDeviceMetadata = lookupDeviceMetadata({vendorId, productId});
 	activeDevice = new Device(path, selectedDeviceMetadata);
+	store.dispatch(actions.selectDevice(selectedDeviceMetadata.keys));
 
-	const PROGRAMMING_KEY_INDEX = activeDevice.interface.constructor.PROGRAMMING_KEY_INDEX;
-	activeDevice.interface.on('down', keyIndex => {
-		if (keyIndex === PROGRAMMING_KEY_INDEX) {
+	const PROGRAMMING_KEY_ID = activeDevice.interface.constructor.PROGRAMMING_KEY_ID;
+	activeDevice.interface.on('down', keyId => {
+		if (keyId === PROGRAMMING_KEY_ID) {
 			return;
 		}
 
 		sendPressedKeysToMainWindow();
 
 		const keyConfigs = store.getState().keyConfigs;
-		if (!keyConfigs.has(keyIndex)) {
-			log.debug(`Key #${keyIndex} has no config, ignoring procedure invocation request.`);
+		if (!keyConfigs.has(keyId)) {
+			log.debug(`Key #${keyId} has no config, ignoring procedure invocation request.`);
 			return;
 		}
 
-		const keyConfig = keyConfigs.get(keyIndex);
+		const keyConfig = keyConfigs.get(keyId);
+		if (keyConfig.disabled) {
+			log.debug(`Key #${keyId} is disabled, ignoring procedure invocation request.`);
+			return;
+		}
+
 		if (!keyConfig.procedureName) {
-			log.debug(`Key #${keyIndex} has no procedure, ignoring procedure invocation request.`);
+			log.debug(`Key #${keyId} has no procedure, ignoring procedure invocation request.`);
 			return;
 		}
 
-		if (keyIsOnCooldown(keyIndex)) {
-			log.debug(`Key #${keyIndex} is on cooldown, ignoring procedure invocation request.`);
+		if (keyIsOnCooldown(keyId)) {
+			log.debug(`Key #${keyId} is on cooldown, ignoring procedure invocation request.`);
 			return;
 		}
 
-		blockKey(keyIndex); // Block the key entirely until we know how this RPC attempt went.
+		blockKey(keyId); // Block the key entirely until we know how this RPC attempt went.
 
 		/* eslint-disable function-paren-newline */
 		/* Ideally, we would use Promise.finally() to call `putKeyOnCooldown`.
@@ -97,15 +122,15 @@ function selectNewDevice({path, vendorId, productId}) {
 		 * Once it is, we can remove this bluebird dependency and simplify this code.
 		 * Until then, we use bluebird.resolve to roughly approximate the behavior of .finally. */
 		BB.resolve(
-			invokeKeyProcedure(keyIndex, keyConfig)
+			invokeKeyProcedure(keyId, keyConfig)
 		).then(() => {
-			putKeyOnCooldown(keyIndex);
+			putKeyOnCooldown(keyId);
 		}).catch(() => {/* Ignore, logging is handled within invokeKeyProcedure */});
 		/* eslint-enable function-paren-newline */
 	});
 
 	activeDevice.interface.on('up', keyIndex => {
-		if (keyIndex === PROGRAMMING_KEY_INDEX) {
+		if (keyIndex === PROGRAMMING_KEY_ID) {
 			references.mainWindow.focus();
 			return;
 		}
@@ -122,7 +147,15 @@ function lookupDeviceMetadata({vendorId, productId}) {
 		return;
 	}
 
-	return vendor.get(productId);
+	const product = vendor.get(productId);
+	if (!product) {
+		return;
+	}
+
+	return {
+		vendorName: vendor.name,
+		...product
+	};
 }
 
 /**

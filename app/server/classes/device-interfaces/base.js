@@ -4,7 +4,7 @@
 const EventEmitter = require('events');
 
 class BaseDeviceInterface extends EventEmitter {
-	static get PROGRAMMING_KEY_INDEX() {
+	static get PROGRAMMING_KEY_ID() {
 		return 'programming';
 	}
 
@@ -23,8 +23,8 @@ class BaseDeviceInterface extends EventEmitter {
 			return;
 		}
 
-		if (keyIndex === this.constructor.PROGRAMMING_KEY_INDEX) {
-			keyIndex = BaseDeviceInterface.PROGRAMMING_KEY_INDEX;
+		if (keyIndex === this.constructor.PROGRAMMING_KEY_ID) {
+			keyIndex = BaseDeviceInterface.PROGRAMMING_KEY_ID;
 		}
 
 		this.__pressedKeys.add(keyIndex);
@@ -36,8 +36,8 @@ class BaseDeviceInterface extends EventEmitter {
 			return;
 		}
 
-		if (keyIndex === this.constructor.PROGRAMMING_KEY_INDEX) {
-			keyIndex = BaseDeviceInterface.PROGRAMMING_KEY_INDEX;
+		if (keyIndex === this.constructor.PROGRAMMING_KEY_ID) {
+			keyIndex = BaseDeviceInterface.PROGRAMMING_KEY_ID;
 		}
 
 		this.__pressedKeys.delete(keyIndex);

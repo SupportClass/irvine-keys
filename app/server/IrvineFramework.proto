@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+package irvineframework;
+
+service IrvineFramework {
+	rpc GetDynamicEnumerations (GetDynamicEnumerationsRequest) returns (GetDynamicEnumerationsResponse);
+	rpc Transition (TransitionRequest) returns (TransitionResponse);
+	rpc SetPreviewScene (SetPreviewSceneRequest) returns (SetPreviewSceneResponse);
+	rpc GetScenes (GetScenesRequest) returns (GetScenesResponse);
+}
+
+message GetDynamicEnumerationsRequest {}
+
+message GetDynamicEnumerationsResponse {
+	repeated DynamicEnumeration dynamicEnumerations = 1;
+}
+
+message DynamicEnumeration {
+	string rpc_name = 1;
+	int32 field_tag = 2;
+	google.protobuf.Any field_enum = 3;
+}
+
+message TransitionRequest {
+	// The name of the transition to use. If not specified, the Irvine framework will automatically determine which transition to used, based on the currently loaded transition matrix.
+	string transition_name = 1;
+
+	// The duration of the transition, in milliseconds. Ignored for transitions such as stingers and hard cuts, for which a duration doesn't apply.
+	int32 transition_duration = 2;
+
+	// The scene to transition to. Defaults to whatever scene is currently in Preview.
+	string scene_name = 3;
+}
+
+message TransitionResponse {}
+
+message SetPreviewSceneRequest {
+	string scene_name = 1;
+}
+
+message SetPreviewSceneResponse {}
+
+message GetScenesRequest {}
+
+message GetScenesResponse {
+	repeated OBSScene scenes = 1;
+}
+
+message OBSScene {
+	string name = 1;
+	repeated OBSSource sources = 2;
+}
+
+message OBSSource {
+	string name = 1;
+	string type_id = 2;
+	string type = 3;
+}

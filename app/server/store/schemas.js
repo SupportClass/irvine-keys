@@ -5,9 +5,12 @@ const Joi = require('joi');
 
 const SCHEMAS = {
 	DEVICE: Joi.object.keys({
-		path: Joi.string().required(),
 		vendorId: Joi.number().required(),
-		productId: Joi.number().required()
+		vendorName: Joi.string().required(),
+		productId: Joi.number().required(),
+		productName: Joi.string().required(),
+		path: Joi.string(),
+		keyIds: Joi.array()
 	})
 };
 

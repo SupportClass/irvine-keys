@@ -7,6 +7,19 @@ const Joi = require('joi');
 const SCHEMAS = require('./schemas');
 
 const ACTIONS_AND_TYPES = {
+	SET_SUPPORTED_DEVICES: 'SET_SUPPORTED_DEVICES',
+	setSupportedDevices(devices) {
+		const {error: validationError} = Joi.validate(devices, Joi.array().items(SCHEMAS.DEVICE));
+		if (validationError) {
+			throw validationError;
+		}
+
+		return {
+			type: ACTIONS_AND_TYPES.SET_SUPPORTED_DEVICES,
+			products: devices
+		};
+	},
+
 	UPDATE_DETECTED_DEVICES: 'UPDATE_DETECTED_DEVICES',
 	updateDetectedDevices(devices) {
 		const {error: validationError} = Joi.validate(devices, Joi.array().items(SCHEMAS.DEVICE));
@@ -16,15 +29,20 @@ const ACTIONS_AND_TYPES = {
 
 		return {
 			type: ACTIONS_AND_TYPES.UPDATE_DETECTED_DEVICES,
-			devices
+			products: devices
 		};
 	},
 
-	INITIALIZE_KEY_STATES: 'INITIALIZE_KEY_STATES',
-	initializeKeyStates(keyIds) {
+	SELECT_DEVICE: 'SELECT_DEVICE',
+	selectDevice(deviceMetadata) {
+		const {error: validationError} = Joi.validate(deviceMetadata, SCHEMAS.DEVICE);
+		if (validationError) {
+			throw validationError;
+		}
+
 		return {
-			type: ACTIONS_AND_TYPES.INITIALIZE_KEY_STATES,
-			keyIds
+			type: ACTIONS_AND_TYPES.SELECT_DEVICE,
+			...deviceMetadata
 		};
 	},
 
@@ -82,6 +100,75 @@ const ACTIONS_AND_TYPES = {
 		return {
 			type: ACTIONS_AND_TYPES.CLEAR_KEY_COOLDOWN,
 			keyId
+		};
+	},
+
+	ASSIGN_PROCEDURE_NAME: 'ASSIGN_PROCEDURE_NAME',
+	assignProcedureName(keyId, procedureName) {
+		return {
+			type: ACTIONS_AND_TYPES.ASSIGN_PROCEDURE_NAME,
+			keyId,
+			procedureName
+		};
+	},
+
+	ASSIGN_PROCEDURE_ARGS: 'ASSIGN_PROCEDURE_ARGS',
+	assignProcedureArgs(keyId, procedureArgs) {
+		return {
+			type: ACTIONS_AND_TYPES.ASSIGN_PROCEDURE_NAME,
+			keyId,
+			procedureArgs
+		};
+	},
+
+	DISABLE_KEY: 'DISABLE_KEY',
+	disableKey(keyId) {
+		return {
+			type: ACTIONS_AND_TYPES.DISABLE_KEY,
+			keyId
+		};
+	},
+
+	ENABLE_KEY: 'ENABLE_KEY',
+	enableKey(keyId) {
+		return {
+			type: ACTIONS_AND_TYPES.DISABLE_KEY,
+			keyId
+		};
+	},
+
+	MERGE_KEYS: 'MERGE_KEYS',
+	mergeKeys(rootKeyId, keyIds) {
+		return {
+			type: ACTIONS_AND_TYPES.MERGE_KEYS,
+			rootKeyId,
+			keyIds
+		};
+	},
+
+	SPLIT_KEY: 'SPLIT_KEY',
+	splitKey(rootKeyId) {
+		return {
+			type: ACTIONS_AND_TYPES.SPLIT_KEY,
+			rootKeyId
+		};
+	},
+
+	SAVE_PROFILE: 'SAVE_PROFILE',
+	saveProfile(filePath) {
+		// TODO: Implement save method here.
+		return {
+			type: ACTIONS_AND_TYPES.SAVE_PROFILE,
+			filePath
+		};
+	},
+
+	LOAD_PROFILE: 'LOAD_PROFILE',
+	loadProfile(filePath) {
+		// TODO: Implement load method here.
+		return {
+			type: ACTIONS_AND_TYPES.LOAD_PROFILE,
+			filePath
 		};
 	}
 };
