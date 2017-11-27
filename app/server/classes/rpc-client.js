@@ -2,6 +2,7 @@
 
 // Packages
 const grpc = require('grpc');
+const objectPath = require('object-path');
 
 class RpcClient {
 	/**
@@ -10,12 +11,23 @@ class RpcClient {
 	 * For gRPC, this is in a simple ip:port format.
 	 * @param protoPath {String} - The path to the *.proto file on disk to load.
 	 * If not provided, will attempt to use Reflection to automatically grab the protocol from the server.
-	 * @param packageName {String} - The name of the package to use from the protocol.
-	 * @param serviceName {String} - The name of the service to use from the protocol.
+	 * @param servicePath {String|Array<String>} - The object path to the service to use from the protocol.
 	 */
-	constructor({serverAddress, protoPath, packageName, serviceName}) {
-		const pkg = grpc.load(protoPath)[packageName];
-		this._grpcClient = new pkg[serviceName](serverAddress, grpc.credentials.createInsecure());
+	constructor({serverAddress, proto, servicePath}) {
+		let root;
+		if (typeof proto === 'string') {
+			root = grpc.load(proto);
+		} else if (typeof proto === 'object') {
+			root = grpc.loadObject(proto);
+		} else {
+			throw new Error('proto must be a string filepath or a ProtoBuf.js object');
+		}
+
+		const Service = objectPath.get(root, servicePath);
+		if (!Service) {
+			throw new Error('Service not found in protocol');
+		}
+		this._grpcClient = new Service(serverAddress, grpc.credentials.createInsecure());
 	}
 
 	/**

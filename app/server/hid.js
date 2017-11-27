@@ -90,15 +90,21 @@ function selectNewDevice({path, vendorId, productId}) {
 			return;
 		}
 
-		sendPressedKeysToMainWindow();
+		const state = store.getState();
+		const merge = state.merges.find(merge => merge.keyIds.includes(keyId));
+		if (merge) {
+			log.debug(`Key #${keyId} pressed, and is part of a merge:`, merge);
+			keyId = merge.rootKeyId;
+		}
 
-		const keyConfigs = store.getState().keyConfigs;
-		if (!keyConfigs.has(keyId)) {
+		sendPressedKeysToMainWindow(); // TODO: This doesn't handle merges right.
+
+		const keyConfig = state.keyConfigs.find(kc => kc.id === keyId);
+		if (!keyConfig) {
 			log.debug(`Key #${keyId} has no config, ignoring procedure invocation request.`);
 			return;
 		}
 
-		const keyConfig = keyConfigs.get(keyId);
 		if (keyConfig.disabled) {
 			log.debug(`Key #${keyId} is disabled, ignoring procedure invocation request.`);
 			return;

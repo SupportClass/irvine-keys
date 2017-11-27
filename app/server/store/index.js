@@ -23,33 +23,15 @@ const enhancer = compose(
 const rootReducer = combineReducers(reducers);
 
 const initialState = {
-	profile: {
-		filePath: 'C:\\Users\\vanca\\Desktop\\My Profile.json',
-		hasUnsavedChanges: false
-	},
+	// @Implemented
+	profile: {},
 
-	// Implemented
+	// @Implemented
 	selectedDevice: null,
 
 	// @Persistent
 	// TODO: Implement
-	protocol: {
-		reflected: false,
-		fileName: 'myProtocol.proto',
-		availableProcedures: [{
-			name: 'transition',
-			fields: [{
-				name: 'transition_name',
-				type: String
-			}, {
-				name: 'transition_duration',
-				type: Number
-			}, {
-				name: 'scene_name',
-				type: String
-			}]
-		}]
-	},
+	protocol: {},
 
 	// @Persistent
 	// @Implemented
@@ -66,7 +48,17 @@ const initialState = {
 	detectedDevices: [],
 
 	// @Implemented
-	keyStates: []
+	keyStates: [],
+
+	// TODO: Implement
+	updater: {},
+
+	// TODO: Implement
+	recentConnections: [],
+
+	connection: {
+
+	}
 };
 
 store = createStore(rootReducer, initialState, enhancer);

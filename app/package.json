@@ -16,9 +16,12 @@
     "joi": "^13.0.2",
     "lodash.debounce": "^4.0.8",
     "node-hid": "^0.5.7",
+    "object-path": "^0.11.4",
     "protobufjs": "~6.8.0",
     "redux": "^3.7.2",
     "redux-electron-store": "^0.4.1",
+    "redux-undo": "^0.6.1",
+    "semver": "^5.4.1",
     "usb-detection": "^1.4.2",
     "xkeys": "0.0.4"
   },

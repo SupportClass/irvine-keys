@@ -1,10 +1,15 @@
 'use strict';
 
 // Packages
+const grpc = require('grpc');
 const Joi = require('joi');
+const objectPath = require('object-path');
 
 // Ours
+const profile = require('../profile');
+const protocol = require('../protocol');
 const SCHEMAS = require('./schemas');
+const {references} = require('../util');
 
 const ACTIONS_AND_TYPES = {
 	SET_SUPPORTED_DEVICES: 'SET_SUPPORTED_DEVICES',
@@ -154,21 +159,145 @@ const ACTIONS_AND_TYPES = {
 		};
 	},
 
-	SAVE_PROFILE: 'SAVE_PROFILE',
-	saveProfile(filePath) {
-		// TODO: Implement save method here.
+	SAVING_PROFILE: 'SAVING_PROFILE',
+	savingProfile(filePath) {
 		return {
-			type: ACTIONS_AND_TYPES.SAVE_PROFILE,
+			type: ACTIONS_AND_TYPES.SAVING_PROFILE,
 			filePath
 		};
 	},
 
-	LOAD_PROFILE: 'LOAD_PROFILE',
-	loadProfile(filePath) {
-		// TODO: Implement load method here.
+	SAVE_PROFILE_SUCCESS: 'SAVE_PROFILE_SUCCESS',
+	savingProfileSuccess(filePath) {
 		return {
-			type: ACTIONS_AND_TYPES.LOAD_PROFILE,
+			type: ACTIONS_AND_TYPES.SAVE_PROFILE_SUCCESS,
 			filePath
+		};
+	},
+
+	SAVE_PROFILE_FAILURE: 'SAVE_PROFILE_FAILURE',
+	saveProfileFailure(filePath, error) {
+		return {
+			type: ACTIONS_AND_TYPES.SAVE_PROFILE_FAILURE,
+			filePath,
+			error
+		};
+	},
+
+	saveProfile(filePath) {
+		return function (dispatch, getState) {
+			dispatch(ACTIONS_AND_TYPES.savingProfile(filePath));
+			return profile.save(filePath, getState()).then(
+				() => dispatch(ACTIONS_AND_TYPES.savingProfileSuccess(filePath)),
+				error => dispatch(ACTIONS_AND_TYPES.saveProfileFailure(filePath, error))
+			);
+		};
+	},
+
+	LOADING_PROFILE: 'LOADING_PROFILE',
+	loadingProfile(filePath) {
+		return {
+			type: ACTIONS_AND_TYPES.LOADING_PROFILE,
+			filePath
+		};
+	},
+
+	LOAD_PROFILE_SUCCESS: 'LOAD_PROFILE_SUCCESS',
+	loadProfileSuccess(filePath, loadedState) {
+		return {
+			type: ACTIONS_AND_TYPES.LOAD_PROFILE_SUCCESS,
+			filePath,
+			loadedState
+		};
+	},
+
+	LOAD_PROFILE_FAILURE: 'LOAD_PROFILE_FAILURE',
+	loadProfileFailure(filePath, error) {
+		return {
+			type: ACTIONS_AND_TYPES.LOAD_PROFILE_FAILURE,
+			filePath,
+			error
+		};
+	},
+
+	loadProfile(filePath) {
+		return function (dispatch, getState) {
+			dispatch(ACTIONS_AND_TYPES.loadingProfile(filePath));
+			return profile.load(filePath, getState()).then(
+				loadedState => dispatch(ACTIONS_AND_TYPES.loadProfileSuccess(filePath, loadedState)),
+				error => dispatch(ACTIONS_AND_TYPES.loadProfileFailure(filePath, error))
+			);
+		};
+	},
+
+	LOAD_PROTOCOL_SUCCESS: 'LOAD_PROTOCOL_SUCCESS',
+	loadProtocolSuccess(filePath, serviceSummary) {
+		return {
+			type: ACTIONS_AND_TYPES.LOAD_PROTOCOL_SUCCESS,
+			filePath,
+			serviceSummary
+		};
+	},
+
+	LOAD_PROTOCOL_FAILURE: 'LOAD_PROTOCOL_FAILURE',
+	loadProtocolFailure(filePath, error) {
+		return {
+			type: ACTIONS_AND_TYPES.LOAD_PROTOCOL_FAILURE,
+			filePath,
+			error
+		};
+	},
+
+	loadProtocol(filePath) {
+		return function (dispatch) {
+			dispatch(ACTIONS_AND_TYPES.loadingProtocol(filePath));
+			return protocol.loadFromDisk(filePath).then(
+				({pbjsRoot, serviceSummary}) => {
+					const grpcRoot = grpc.loadObject(pbjsRoot);
+					const Service = objectPath.get(grpcRoot, pbjsRoot);
+					references.activeRpcClient = new Service();
+					dispatch(ACTIONS_AND_TYPES.loadProtocolSuccess(filePath, serviceSummary));
+				},
+				error => dispatch(ACTIONS_AND_TYPES.loadProtocolFailure(filePath, error))
+			);
+		};
+	},
+
+	CONNECTING_TO_SERVER: 'CONNECTING_TO_SERVER',
+	connectingToServer(address) {
+		return {
+			type: ACTIONS_AND_TYPES.CONNECTING_TO_SERVER,
+			address
+		};
+	},
+
+	SERVER_CONNECTION_FAILURE: 'SERVER_CONNECTION_FAILURE',
+	serverConnectionFailed(address, reason) {
+		return {
+			type: ACTIONS_AND_TYPES.SERVER_CONNECTION_FAILURE,
+			address,
+			reason
+		};
+	},
+
+	SERVER_CONNECTION_SUCCESS: 'SERVER_CONNECTION_SUCCESS',
+	serverConnectionSuccess(address) {
+		return {
+			type: ACTIONS_AND_TYPES.SERVER_CONNECTION_SUCCESS,
+			address
+		};
+	},
+
+	SERVER_CONNECTION_LOST: 'SERVER_CONNECTION_LOST',
+	serverConnectionLost() {},
+
+	connectToServer(address) {
+		return function (dispatch, getState) {
+			dispatch(ACTIONS_AND_TYPES.loadingProfile(filePath));
+			return profile.load(filePath, getState()).then(
+				loadedState => dispatch(ACTIONS_AND_TYPES.loadProfileSuccess(filePath, loadedState)),
+				error => dispatch(ACTIONS_AND_TYPES.loadProfileFailure(filePath, error))
+			);
 		};
 	}
 };

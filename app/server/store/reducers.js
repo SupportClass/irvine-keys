@@ -6,21 +6,53 @@ const actions = require('./actions');
 const REDUCERS = {
 	profile(state = {}, action) {
 		switch (action.type) {
-			case actions.SAVE_PROFILE:
+			case actions.SAVING_PROFILE:
 				return {
 					...state,
+					saving: true
+				};
+			case actions.SAVE_PROFILE_SUCCESS:
+				return {
+					...state,
+					saving: false,
 					filePath: action.filePath,
 					hasUnsavedChanges: false
 				};
-			case actions.LOAD_PROFILE:
+			case actions.SAVE_PROFILE_FAILURE:
 				return {
 					...state,
+					saving: false,
+					saveError: action.error
+				};
+			case actions.LOADING_PROFILE:
+				return {
+					...state,
+					loading: true
+				};
+			case actions.LOAD_PROFILE_SUCCESS:
+				return {
+					...state,
+					loading: false,
 					filePath: action.filePath,
 					hasUnsavedChanges: false
+				};
+			case actions.LOAD_PROFILE_FAILURE:
+				return {
+					...state,
+					loading: false,
+					loadError: action.error
 				};
 			default:
 				return state;
-		};
+		}
+	},
+	protocol(state = {}, action) {
+		switch (action.type) {
+			case actions.LOAD_PROFILE_SUCCESS:
+				return action.loadedState.protocol;
+			default:
+				return state;
+		}
 	},
 	detectedDevices(state = [], action) {
 		switch (action.type) {
@@ -115,6 +147,8 @@ const REDUCERS = {
 	},
 	keyConfigs(state = [], action) {
 		switch (action.type) {
+			case actions.LOAD_PROFILE_SUCCESS:
+				return action.loadedState.keyConfigs;
 			case actions.SELECT_DEVICE:
 				return action.keyIds.map(keyId => {
 					return {
@@ -159,11 +193,13 @@ const REDUCERS = {
 	},
 	keyMerges(state = [], action) {
 		switch (action.type) {
+			case actions.LOAD_PROFILE_SUCCESS:
+				return action.loadedState.keyMerges;
 			case actions.MERGE_KEYS: {
 				// Build the array of keyIds which will be contained in this merge.
 				// To do this, we have to check to see if any of the provided keyIds are
 				// already contained in existing merges.
-				const keyIds = action.keyIds.reduce((accumulator, currentValue) => {
+				const keyIdsArray = action.keyIds.reduce((accumulator, currentValue) => {
 					// Search for an existing merge for this child key.
 					// If found, concat all keys of that merge.
 					// Else, just push the lone key id.
@@ -172,6 +208,7 @@ const REDUCERS = {
 						accumulator.concat(foundMerge.keyIds) :
 						accumulator.concat([currentValue]);
 				}, []);
+				const keyIdsSet = new Set(keyIdsArray);
 
 				// If the provided root key is already in a merge, update that merge.
 				const existingMergeIndex = state.findIndex(merge => merge.rootKeyId === action.rootKeyId);
@@ -183,7 +220,7 @@ const REDUCERS = {
 						newProps: {
 							keyIds: [
 								...existingMerge.keyIds,
-								...keyIds
+								...keyIdsSet
 							]
 						}
 					});
@@ -194,7 +231,7 @@ const REDUCERS = {
 					...state,
 					{
 						rootKeyId: action.rootKeyId,
-						keyIds
+						keyIds: Array.from(keyIdsSet)
 					}
 				];
 			}
