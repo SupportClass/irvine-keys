@@ -1,8 +1,9 @@
 'use strict';
 
 // Packages
-const {createStore, compose, combineReducers} = require('redux');
+const {createStore, compose, combineReducers, applyMiddleware} = require('redux');
 const {electronEnhancer} = require('redux-electron-store');
+const {promiseMiddleware} = require('redux-promise-middleware');
 
 // Ours
 const reducers = require('./reducers');
@@ -11,6 +12,7 @@ let store; // eslint-disable-line prefer-const
 
 /* eslint-disable function-paren-newline */
 const enhancer = compose(
+	applyMiddleware(promiseMiddleware),
 	// Must be placed after any enhancers which dispatch
 	// their own actions such as redux-thunk or redux-saga
 	electronEnhancer({
@@ -20,7 +22,9 @@ const enhancer = compose(
 );
 /* eslint-enable function-paren-newline */
 
-const rootReducer = combineReducers(reducers);
+const rootReducer = combineReducers({
+	profile: require('../profile/profile-reducer')
+});
 
 const initialState = {
 	// @Implemented

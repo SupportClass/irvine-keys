@@ -7,7 +7,7 @@ const util = require('util');
 // Packages
 const semver = require('semver');
 
-const CURRENT_VERSION = require('../package.json').version;
+const CURRENT_VERSION = require('../util').version;
 const CURRENT_MAJOR_VERSION = semver.major(CURRENT_VERSION);
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
@@ -18,15 +18,16 @@ module.exports = {
 	 * Filters the state to save only the relevant keys.
 	 * @param filePath {String} - The filepath to save to.
 	 * @param state {Object} - The Redux state to save.
-	 * @returns {Promise.<*>}
+	 * @returns {Promise.<String>} - Resolves with the provided filePath, for reflection purposes.
 	 */
 	async save(filePath, state) {
-		return writeFile(filePath, JSON.stringify({
+		await writeFile(filePath, JSON.stringify({
 			appVersion: CURRENT_VERSION,
 			protocol: state.protocol,
 			keyConfigs: state.keyConfigs,
 			keyMerges: state.keyMerges
 		}, null, 2), 'utf-8');
+		return filePath;
 	},
 
 	/**
@@ -35,7 +36,7 @@ module.exports = {
 	 * Errors if the profile being loaded was made with a different major version of the app.
 	 * @param filePath {String} - The filepath to load from.
 	 * @param currentState {Object} - The current state, which the loaded state will be merged into.
-	 * @returns {Promise.<Object>}
+	 * @returns {Promise.<{filePath: String, newState: {}}>}
 	 */
 	async load(filePath, currentState) {
 		const file = await readFile(filePath, 'utf-8');
@@ -55,8 +56,11 @@ module.exports = {
 		}
 
 		return {
-			...currentState,
-			...loadedState
+			filePath,
+			newState: {
+				...currentState,
+				...loadedState
+			}
 		};
 	}
 };

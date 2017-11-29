@@ -20,6 +20,7 @@
     "protobufjs": "~6.8.0",
     "redux": "^3.7.2",
     "redux-electron-store": "^0.4.1",
+    "redux-promise-middleware": "^5.0.0",
     "redux-undo": "^0.6.1",
     "semver": "^5.4.1",
     "usb-detection": "^1.4.2",

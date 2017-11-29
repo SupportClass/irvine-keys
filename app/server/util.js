@@ -40,5 +40,29 @@ module.exports = {
 				resolve();
 			}, ms);
 		});
+	},
+	updateObjectInArray(array, {
+		idField = 'id',
+		id,
+		newProps
+	}) {
+		const valueIndex = array.findIndex(value => value[idField] === id);
+		if (valueIndex < 0) {
+			return array;
+		}
+
+		const newArray = array.slice(0);
+		newArray[valueIndex] = {
+			...array[valueIndex],
+			...newProps
+		};
+
+		return newArray;
+	},
+	removeObjectFromArray(array, {
+		idField = 'id',
+		id
+	}) {
+		return array.filter(item => item[idField] !== id);
 	}
 };
