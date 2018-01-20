@@ -2,7 +2,8 @@
 	'use strict';
 
 	const ipcRenderer = require('electron').ipcRenderer;
-	const recentConnections = ipcRenderer.sendSync('recentConnections:getSync');
+	//const recentConnections = ipcRenderer.sendSync('recentConnections:getSync');
+	const recentConnections = [];
 
 	/**
 	 * @customElement

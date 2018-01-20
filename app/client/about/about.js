@@ -1,6 +1,6 @@
 const shell = require('electron').shell;
 
-const version = require('../../server/util').version;
+const version = require('../../server/build/util').version;
 
 document.getElementById('header').textContent = `Irvine Keys v${version}`;
 

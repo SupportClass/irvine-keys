@@ -11,7 +11,7 @@ class DeviceXkeysXK24 extends Polymer.Element {
 		return {
 			deviceName: {
 				type: String,
-				value: 'xkeys-xk24',
+				value: 'X-keys XK-24',
 				reflectToAttribute: true
 			}
 		};

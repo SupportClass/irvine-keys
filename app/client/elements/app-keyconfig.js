@@ -23,8 +23,10 @@
 		ready() {
 			super.ready();
 
-			this.availableMethods = ipcRenderer.sendSync('nodecg:getAvailableMethodsSync');
-			this.availableScenes = ipcRenderer.sendSync('nodecg:getAvailableScenesSync');
+			//this.availableMethods = ipcRenderer.sendSync('nodecg:getAvailableMethodsSync');
+			//this.availableScenes = ipcRenderer.sendSync('nodecg:getAvailableScenesSync');
+			this.availableMethods = [];
+			this.availableScenes = [];
 
 			ipcRenderer.on('availableMethodsChanged', availableMethods => {
 				this.availableMethods = availableMethods;
