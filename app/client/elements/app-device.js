@@ -2,14 +2,13 @@
 	// Ours
 	const store = require('../server/store');
 	const appReducer = require('../server/store/app-reducer').actions;
-	const ReduxMixin = PolymerRedux(store);
 	console.log(store.getState());
 
 	/**
 	 * @customElement
 	 * @polymer
 	 */
-	class AppDevice extends ReduxMixin(Polymer.Element) {
+	class AppDevice extends window.ReduxMixin(Polymer.Element) {
 		static get is() {
 			return 'app-device';
 		}

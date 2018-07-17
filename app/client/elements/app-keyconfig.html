@@ -2,7 +2,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="app-keyconfig-mode.html">
+<link rel="import" href="app-keyconfig-method.html">
 
 <dom-module id="app-keyconfig">
 	<template>
@@ -81,20 +81,9 @@
 			activate-event="select"
 			selected-attribute="selected"
 			hidden="[[_areMultipleKeysSelected(selectedKeys)]]">
-			<app-keyconfig-mode
-				label="Scene Preview"
-				options="[[availableScenes]]"
-				allow-custom-value>
-			</app-keyconfig-mode>
-
-			<app-keyconfig-mode
-				label="Bundle Method"
-				options="[[availableMethods]]">
-			</app-keyconfig-mode>
-
-			<app-keyconfig-mode
-				label="Disabled">
-			</app-keyconfig-mode>
+			<template is="dom-repeat" items="[[availableMethods]]" as="method">
+				<app-keyconfig-method method="[[method]]"></app-keyconfig-method>
+			</template>
 		</iron-selector>
 
 		<div class="layout vertical" hidden="[[!_areMultipleKeysSelected(selectedKeys)]]">

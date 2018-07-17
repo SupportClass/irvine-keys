@@ -7,7 +7,7 @@
 	 * @customElement
 	 * @polymer
 	 */
-	class AppKeyconfig extends Polymer.Element {
+	class AppKeyconfig extends window.ReduxMixin(Polymer.Element) {
 		static get is() {
 			return 'app-keyconfig';
 		}
@@ -15,26 +15,16 @@
 		static get properties() {
 			return {
 				selectedKeys: Array,
-				availableScenes: Array,
-				availableMethods: Array
+				availableMethods: {
+					statePath(state) {
+						if (!state.protocol || !state.protocol.serviceSummary) {
+							return [];
+						}
+
+						return state.protocol.serviceSummary.availableProcedures;
+					}
+				}
 			};
-		}
-
-		ready() {
-			super.ready();
-
-			//this.availableMethods = ipcRenderer.sendSync('nodecg:getAvailableMethodsSync');
-			//this.availableScenes = ipcRenderer.sendSync('nodecg:getAvailableScenesSync');
-			this.availableMethods = [];
-			this.availableScenes = [];
-
-			ipcRenderer.on('availableMethodsChanged', availableMethods => {
-				this.availableMethods = availableMethods;
-			});
-
-			ipcRenderer.on('availableScenesChanged', availableScenes => {
-				this.availableScenes = availableScenes;
-			});
 		}
 
 		raiseButton(e) {
