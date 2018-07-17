@@ -24,12 +24,16 @@
 					statePath: 'desiredDeviceType'
 				},
 				availableDevices: Array,
-				selectedDevice: String
+				selectedDevice: String,
+				selectedKeyIds: {
+					type: Array,
+					notify: true
+				}
 			};
 		}
 
 		ready() {
-			this._forwardPropertyNotification = this._forwardPropertyNotification.bind(this);
+			this._updateSelectedKeyIds = this._updateSelectedKeyIds.bind(this);
 			super.ready();
 		}
 
@@ -56,18 +60,18 @@
 
 			const oldDevice = this._currentlySelectedDevice;
 			if (oldDevice) {
-				oldDevice.removeEventListener('selected-keys-changed', this._forwardPropertyNotification);
+				oldDevice.removeEventListener('selected-key-ids-changed', this._updateSelectedKeyIds);
 			}
 
 			if (newDevice) {
-				newDevice.addEventListener('selected-keys-changed', this._forwardPropertyNotification);
+				newDevice.addEventListener('selected-key-ids-changed', this._updateSelectedKeyIds);
 			}
 
 			this._currentlySelectedDevice = newDevice;
 		}
 
-		_forwardPropertyNotification(e) {
-			console.log('_forwardPropertyNotification:', e);
+		_updateSelectedKeyIds() {
+			this.selectedKeyIds = this._currentlySelectedDevice.selectedKeyIds;
 		}
 
 		_handleDeviceSelectorChange(e) {

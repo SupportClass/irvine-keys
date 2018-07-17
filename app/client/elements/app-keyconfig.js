@@ -14,7 +14,7 @@
 
 		static get properties() {
 			return {
-				selectedKeys: Array,
+				selectedKeyIds: Array,
 				availableMethods: {
 					statePath(state) {
 						if (!state.protocol || !state.protocol.serviceSummary) {
@@ -42,23 +42,23 @@
 		group() {
 			this.dispatchEvent(new CustomEvent('group-keys', {
 				detail: {
-					keys: this.selectedKeys
+					keys: this.selectedKeyIds
 				},
 				bubbles: false,
 				composed: false
 			}));
 		}
 
-		_computeSelectedKeyLabel(selectedKeys) {
-			if (selectedKeys.length === 0) {
+		_computeSelectedKeyLabel(selectedKeyIds) {
+			if (!Array.isArray(selectedKeyIds) || selectedKeyIds.length === 0) {
 				return 'None';
 			}
 
-			if (selectedKeys.length === 1) {
-				return `Key #${selectedKeys[0].index + 1}`;
+			if (selectedKeyIds.length === 1) {
+				return `Key #${selectedKeyIds[0] + 1}`;
 			}
 
-			return `${selectedKeys.length} Keys`;
+			return `${selectedKeyIds.length} Keys`;
 		}
 
 		_areMultipleKeysSelected(selectedKeys) {
@@ -73,7 +73,7 @@
 			return 'No keys selected.';
 		}
 
-		_isGroupRectangular(selectedKeys) {
+		_isGroupRectangular(selectedKeyIds) {
 
 		}
 	}

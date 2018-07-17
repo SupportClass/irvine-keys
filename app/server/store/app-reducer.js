@@ -9,14 +9,7 @@ const connectionTypes = require('../connection/connection-reducer').types;
 const profileTypes = require('../profile/profile-reducer').types;
 const protocolTypes = require('../protocol/protocol-reducer').types;
 const SCHEMAS = require('./schemas');
-
-const types = {
-	ACKNOWLEDGE_ERROR: 'ACKNOWLEDGE_ERROR',
-	SET_DESIRED_DEVICE_TYPE: 'SET_DESIRED_DEVICE_TYPE',
-	SELECT_DEVICE: 'SELECT_DEVICE',
-	SET_SUPPORTED_DEVICES: 'SET_SUPPORTED_DEVICES',
-	UPDATE_DETECTED_DEVICES: 'UPDATE_DETECTED_DEVICES'
-};
+const types = require('./app-types');
 
 const actions = {
 	setDesiredDeviceType(vendorId, productId) {
@@ -29,12 +22,6 @@ const actions = {
 		};
 	},
 	selectDevice(deviceMetadata) {
-		console.log('action selectDevice:', deviceMetadata);
-		const {error: validationError} = Joi.validate(deviceMetadata, SCHEMAS.DEVICE);
-		if (validationError) {
-			throw validationError;
-		}
-
 		return {
 			type: types.SELECT_DEVICE,
 			payload: deviceMetadata

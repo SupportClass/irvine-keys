@@ -13,20 +13,7 @@ class RpcClient {
 	 * If not provided, will attempt to use Reflection to automatically grab the protocol from the server.
 	 * @param servicePath {String|Array<String>} - The object path to the service to use from the protocol.
 	 */
-	constructor({serverAddress, proto, servicePath}) {
-		let root;
-		if (typeof proto === 'string') {
-			root = grpc.load(proto);
-		} else if (typeof proto === 'object') {
-			root = grpc.loadObject(proto);
-		} else {
-			throw new Error('proto must be a string filepath or a ProtoBuf.js object');
-		}
-
-		const Service = objectPath.get(root, servicePath);
-		if (!Service) {
-			throw new Error('Service not found in protocol');
-		}
+	constructor({serverAddress, Service}) {
 		this._grpcClient = new Service(serverAddress, grpc.credentials.createInsecure());
 	}
 
@@ -62,6 +49,10 @@ class RpcClient {
 	 * @returns {Promise} - Resolves with the response, rejects with any errors.
 	 */
 	callProcedure(name, args = []) {
+		if (args.length <= 0) {
+			args = [undefined];
+		}
+
 		return new Promise((resolve, reject) => {
 			this._grpcClient[name](...args, (error, ...responseArgs) => {
 				if (error) {

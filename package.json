@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "with the keys goin, blammo",
   "devDependencies": {
+    "@grpc/proto-loader": "^0.3.0",
     "ava": "^0.25.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -14,6 +15,7 @@
     "eslint-config-xo": "^0.20.1",
     "eslint-plugin-ava": "^4.5.1",
     "eslint-plugin-html": "^4.0.2",
+    "grpc": "^1.13.0",
     "mockery": "^2.1.0",
     "nyc": "^11.4.1",
     "sinon": "^4.4.0",
@@ -76,7 +78,8 @@
     "start": "electron app/server/main.js --enable-logging",
     "prerelease": "npm t",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags"
+    "postrelease": "git push --follow-tags",
+    "demo-server": "node ./example/demo-server.js"
   },
   "standard-version": {
     "skip": {

@@ -23,10 +23,6 @@ class BaseDeviceInterface extends EventEmitter {
 			return;
 		}
 
-		if (keyIndex === this.constructor.PROGRAMMING_KEY_ID) {
-			keyIndex = BaseDeviceInterface.PROGRAMMING_KEY_ID;
-		}
-
 		this.__pressedKeys.add(keyIndex);
 		this.emit('keyPressed', keyIndex);
 	}
@@ -34,10 +30,6 @@ class BaseDeviceInterface extends EventEmitter {
 	releaseKey(keyIndex) {
 		if (!this.__pressedKeys.has(keyIndex)) {
 			return;
-		}
-
-		if (keyIndex === this.constructor.PROGRAMMING_KEY_ID) {
-			keyIndex = BaseDeviceInterface.PROGRAMMING_KEY_ID;
 		}
 
 		this.__pressedKeys.delete(keyIndex);

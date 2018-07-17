@@ -20,16 +20,16 @@
 				grid-gap: var(--gap-size);
 				grid-template-columns: var(--key-size);
 				grid-template-rows: var(--key-size);
-				left: 39px;
+				left: 67px;
 				position: absolute;
-				top: 60px;
+				top: 83px;
 			}
 		</style>
 
-		<iron-selector id="keys" multi selectable="app-key">
-			<template is="dom-repeat" items="[[keys]]" as="key">
+		<iron-selector id="keys" selectable="app-key" multi attr-for-selected="key-id" selected-items="{{_selectedKeyElements}}">
+			<template is="dom-repeat" items="[[_mapKeyConfigs(keyConfigs)]]" as="key">
 				<app-key
-					index="[[key.index]]"
+					key-id="[[key.id]]"
 					grid-x="[[key.gridX]]"
 					grid-y="[[key.gridY]]"
 					grid-width="[[key.gridWidth]]"

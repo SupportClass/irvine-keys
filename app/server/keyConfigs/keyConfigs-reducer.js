@@ -3,6 +3,7 @@
 // Ours
 const {updateObjectInArray} = require('../util');
 const profileTypes = require('../profile/profile-reducer').types;
+const appTypes = require('../store/app-types');
 
 const types = {
 	DISABLE_KEY: 'DISABLE_KEY',
@@ -21,6 +22,24 @@ const actions = {
 			type: types.DISABLE_KEY,
 			payload: keyId
 		};
+	},
+	assignProcedureName(keyId, procedureName) {
+		return {
+			type: types.ASSIGN_PROCEDURE_NAME,
+			payload: {
+				keyId,
+				procedureName
+			}
+		};
+	},
+	assignProcedureArgs(keyId, procedureArgs) {
+		return {
+			type: types.ASSIGN_PROCEDURE_NAME,
+			payload: {
+				keyId,
+				procedureArgs
+			}
+		};
 	}
 };
 
@@ -28,8 +47,9 @@ function reducer(state = {}, action) {
 	switch (action.type) {
 		case profileTypes.SAVE_PROFILE_FULFILLED:
 			return action.payload.loadedState.keyConfigs;
-		case actions.SELECT_DEVICE:
-			return action.keyIds.map(keyId => {
+		case appTypes.SELECT_DEVICE:
+			console.log('keyConfigs-reducer | SELECT_DEVICE:', action);
+			return action.payload.keyIds.map(keyId => {
 				return {
 					id: keyId,
 					label: '',

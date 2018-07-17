@@ -44,14 +44,14 @@
 			<app-connection-status></app-connection-status>
 			<app-device
 				keys="[[keys]]"
-				selected-keys="{{selectedKeys}}"
+				selected-key-ids="{{selectedKeyIds}}"
 				row-size="{{rowSize}}"
 				column-size="{{columnSize}}">
 			</app-device>
 		</div>
 
 		<app-keyconfig
-			selected-keys="[[selectedKeys]]"
+			selected-key-ids="[[selectedKeyIds]]"
 			on-group-keys="_groupKeys">
 		</app-keyconfig>
 	</template>

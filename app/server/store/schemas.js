@@ -9,7 +9,7 @@ const SCHEMAS = {
 		vendorName: Joi.string().required(),
 		productId: Joi.number().required(),
 		productName: Joi.string().required(),
-		// path: Joi.string(),
+		path: Joi.string(),
 		keyIds: Joi.array()
 	})
 };

@@ -14,7 +14,10 @@
 
 		static get properties() {
 			return {
-				index: Number,
+				keyId: {
+					type: Number,
+					reflectToAttribute: true
+				},
 				pressed: {
 					type: Boolean,
 					reflectToAttribute: true
@@ -35,7 +38,7 @@
 		ready() {
 			super.ready();
 			ipcRenderer.on('xkeys:pressedKeys', (event, pressedKeys) => {
-				this.pressed = pressedKeys.includes(this.index);
+				this.pressed = pressedKeys.includes(this.keyId);
 			});
 		}
 
@@ -44,10 +47,6 @@
 			this.style.gridColumnEnd = x + width;
 			this.style.gridRowStart = y;
 			this.style.gridRowEnd = y + height;
-		}
-
-		_calcDisplayIndex(index) {
-			return index + 1;
 		}
 	}
 

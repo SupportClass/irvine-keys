@@ -2,6 +2,7 @@
 
 // Ours
 const {updateObjectInArray} = require('../util');
+const APP_TYPES = require('../store/app-types');
 
 const types = {
 	PRESS_KEY: 'PRESS_KEY',
@@ -69,8 +70,8 @@ const actions = {
 
 function reducer(state = {}, action) {
 	switch (action.type) {
-		case types.SELECT_DEVICE:
-			return action.keyIds.map(keyId => {
+		case APP_TYPES.SELECT_DEVICE:
+			return action.payload.keyIds.map(keyId => {
 				return {
 					identifier: keyId,
 					pressed: false,

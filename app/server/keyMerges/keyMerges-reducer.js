@@ -26,24 +26,6 @@ const actions = {
 			type: types.SPLIT_KEY,
 			payload: rootKeyId
 		};
-	},
-	assignProcedureName(keyId, procedureName) {
-		return {
-			type: types.ASSIGN_PROCEDURE_NAME,
-			payload: {
-				keyId,
-				procedureName
-			}
-		};
-	},
-	assignProcedureArgs(keyId, procedureArgs) {
-		return {
-			type: types.ASSIGN_PROCEDURE_NAME,
-			payload: {
-				keyId,
-				procedureArgs
-			}
-		};
 	}
 };
 

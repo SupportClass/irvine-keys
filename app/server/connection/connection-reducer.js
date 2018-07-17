@@ -18,17 +18,17 @@ types = {
 
 const actions = {
 	connectToServer(serverAddress) {
-		return function (dispatch, getState) {
-			const service = references.activeRpcService;
-			dispatch({
-				type: types.CONNECT_TO_SERVER,
-				payload: (async () => {
-					const client = new RpcClient({serverAddress, proto, servicePath});
-					await client.waitForReady();
-					references.activeRpcClient = client;
-					return client;
-				})()
-			});
+		return {
+			type: types.CONNECT_TO_SERVER,
+			async payload() {
+				const client = new RpcClient({
+					serverAddress,
+					Service: references.activeRpcService
+				});
+				await client.waitForReady();
+				references.activeRpcClient = client;
+				return client;
+			}
 		};
 	}
 };

@@ -15,6 +15,7 @@ const store = require('./store');
 const StreamDeckInterface = require('./classes/device-interfaces/stream-deck');
 const XkeysInterface = require('./classes/device-interfaces/xkeys');
 const {sendToMainWindow, performRpc, references} = require('./util');
+require('./available-devices');
 
 let totalCalls = 0;
 let activeDevice;
@@ -29,12 +30,12 @@ const vendors = new Map([
 				columns: 4,
 				rows: 6,
 				keyIds: [
-					0, 8, 16, 24,
-					1, 9, 17, 25,
-					2, 10, 18, 26,
-					3, 11, 19, 27,
-					4, 12, 20, 28,
-					5, 13, 21, 29
+					'0', '8', '16', '24',
+					'1', '9', '17', '25',
+					'2', '10', '18', '26',
+					'3', '11', '19', '27',
+					'4', '12', '20', '28',
+					'5', '13', '21', '29'
 				],
 				supportsKeyMerging: true,
 				InterfaceClass: XkeysInterface
@@ -92,7 +93,7 @@ const sendPressedKeysToMainWindow = debounce(() => {
 	sendToMainWindow(
 		'xkeys:pressedKeys',
 		activeDevice ?
-			Array.from(activeDevice.interface.pressedKeys) :
+			activeDevice.interface.getPressedKeys() :
 			[]
 	);
 }, 10);
@@ -102,58 +103,72 @@ function selectNewDesiredDevice({vendorId, productId}) {
 		return;
 	}
 
-	if (activeDevice) {
-		activeDevice.destroy();
-		activeDevice = null;
+	const device = store.getState().detectedDevices.find(device => {
+		return device.vendorId === vendorId && device.productId === productId;
+	});
+	if (!device) {
+		return;
 	}
 
-	const selectedDeviceMetadata = lookupDeviceMetadata({vendorId, productId});
-	store.dispatch(appActions.selectDevice(selectedDeviceMetadata));
+	const devicePath = device.path;
+	if (!devicePath) {
+		return;
+	}
+
+	selectNewDevice({devicePath, vendorId, productId});
 }
 
-function selectNewDevice({path, vendorId, productId}) {
+function selectNewDevice({devicePath, vendorId, productId}) {
 	if (activeDevice) {
 		activeDevice.destroy();
 		activeDevice = null;
 	}
 
 	const selectedDeviceMetadata = lookupDeviceMetadata({vendorId, productId});
-	activeDevice = new Device(path, selectedDeviceMetadata);
-	store.dispatch(appActions.selectDevice(selectedDeviceMetadata.keys));
+	activeDevice = new Device(devicePath, selectedDeviceMetadata);
+	store.dispatch(appActions.selectDevice(selectedDeviceMetadata));
 
 	const PROGRAMMING_KEY_ID = activeDevice.interface.constructor.PROGRAMMING_KEY_ID;
-	activeDevice.interface.on('down', keyId => {
+	activeDevice.interface.on('keyPressed', keyId => {
 		if (keyId === PROGRAMMING_KEY_ID) {
+			references.mainWindow.focus();
 			return;
 		}
 
 		const state = store.getState();
-		const merge = state.merges.find(merge => merge.keyIds.includes(keyId));
+		const merge = state.keyMerges.find(merge => merge.keyIds.includes(keyId));
 		if (merge) {
-			log.debug(`Key #${keyId} pressed, and is part of a merge:`, merge);
+			log.debug(`Key "${keyId}" pressed, and is part of a merge:`, merge);
 			keyId = merge.rootKeyId;
 		}
 
 		sendPressedKeysToMainWindow(); // TODO: This doesn't handle merges right.
 
-		const keyConfig = state.keyConfigs.find(kc => kc.id === keyId);
+		let keyConfig = state.keyConfigs.find(kc => kc.id === keyId);
+
+		// @TODO: remove this debug testing code
+		keyConfig = {
+			disabled: false,
+			procedureName: 'getScenes'
+		};
+
 		if (!keyConfig) {
-			log.debug(`Key #${keyId} has no config, ignoring procedure invocation request.`);
+			log.debug(`Key "${keyId}" has no config, ignoring procedure invocation request.`);
 			return;
 		}
 
 		if (keyConfig.disabled) {
-			log.debug(`Key #${keyId} is disabled, ignoring procedure invocation request.`);
+			log.debug(`Key "${keyId}" is disabled, ignoring procedure invocation request.`);
 			return;
 		}
 
 		if (!keyConfig.procedureName) {
-			log.debug(`Key #${keyId} has no procedure, ignoring procedure invocation request.`);
+			log.debug(`Key "${keyId}" has no procedure, ignoring procedure invocation request.`);
 			return;
 		}
 
 		if (keyIsOnCooldown(keyId)) {
-			log.debug(`Key #${keyId} is on cooldown, ignoring procedure invocation request.`);
+			log.debug(`Key "${keyId}" is on cooldown, ignoring procedure invocation request.`);
 			return;
 		}
 
@@ -172,9 +187,8 @@ function selectNewDevice({path, vendorId, productId}) {
 		/* eslint-enable function-paren-newline */
 	});
 
-	activeDevice.interface.on('up', keyIndex => {
-		if (keyIndex === PROGRAMMING_KEY_ID) {
-			references.mainWindow.focus();
+	activeDevice.interface.on('keyReleased', keyId => {
+		if (keyId === PROGRAMMING_KEY_ID) {
 			return;
 		}
 
@@ -190,18 +204,7 @@ function lookupDeviceMetadata({vendorId, productId}) {
 		return;
 	}
 
-	const product = vendor.products.get(productId);
-	if (!product) {
-		return;
-	}
-
-	return {
-		vendorId,
-		vendorName: vendor.name,
-		productId,
-		productName: product.name,
-		keyIds: product.keyIds
-	};
+	return vendor.products.get(productId);
 }
 
 /**
@@ -213,6 +216,7 @@ function lookupDeviceMetadata({vendorId, productId}) {
 function invokeKeyProcedure(keyId, keyConfig) {
 	const callNumber = totalCalls++;
 	log.debug(`Invoking key #${keyId} procedure "${keyConfig.procedureName}" with arguments "${keyConfig.procedureArguments}" (call #${callNumber}).`);
+	activeDevice.interface.procedureInvoked(keyId);
 
 	return new Promise((resolve, reject) => {
 		try {
@@ -220,14 +224,17 @@ function invokeKeyProcedure(keyId, keyConfig) {
 				.then((...responseArgs) => {
 					log.debug(`Call #${callNumber} succeeded, response:`, responseArgs);
 					resolve(...responseArgs);
+					activeDevice.interface.procedureCompleted(keyId, true);
 				})
 				.catch(error => {
 					log.error(`Call #${callNumber} failed, error:`, error);
 					reject(error);
+					activeDevice.interface.procedureCompleted(keyId, false);
 				});
 		} catch (error) {
 			log.error(`Failed to invoke RPC #${callNumber}:`, error);
 			reject(error);
+			activeDevice.interface.procedureCompleted(keyId, false);
 		}
 	});
 }
