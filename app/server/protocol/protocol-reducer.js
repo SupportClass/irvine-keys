@@ -26,7 +26,6 @@ const actions = {
 			type: types.LOAD_PROTOCOL,
 			async payload() {
 				const {pbjsRoot, servicePath, serviceSummary} = await protocolLib.loadFromDisk(filePath);
-				console.log(pbjsRoot, servicePath, serviceSummary);
 				const grpcRoot = grpc.loadObject(pbjsRoot);
 				const Service = objectPath.get(grpcRoot, servicePath);
 				references.activeRpcService = Service;
