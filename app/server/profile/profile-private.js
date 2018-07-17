@@ -4,7 +4,7 @@
 const fs = require('fs');
 
 // Packages
-const promisify = require('es6-promisify');
+const {promisify} = require('es6-promisify');
 const semver = require('semver');
 
 const CURRENT_VERSION = require('../util').version;

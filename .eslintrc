@@ -1,20 +1,24 @@
 {
-  "extends": "xo/esnext",
-  "plugins": [
-	"html",
-	"ava"
-  ],
-  "rules": {
-	"new-cap": [
-	  2,
-	  {
-		"capIsNewExceptions": [
-		  "Polymer",
-		  "Polymer.MutableData",
-		  "Polymer.GestureEventListeners"
-		]
-	  }
+	"extends": "xo/esnext",
+	"plugins": [
+		"html",
+		"ava"
 	],
-	"capitalized-comments": [0]
-  }
+	"rules": {
+		"new-cap": [
+			2,
+			{
+				"capIsNewExceptions": [
+					"Polymer",
+					"Polymer.MutableData",
+					"Polymer.GestureEventListeners",
+					"PolymerRedux",
+					"ReduxMixin"
+				]
+			}
+		],
+		"capitalized-comments": [
+			0
+		]
+	}
 }

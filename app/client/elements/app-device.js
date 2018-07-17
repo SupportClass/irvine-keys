@@ -1,7 +1,7 @@
 (function () {
 	// Ours
-	const store = require('../server/build/store');
-	const appReducer = require('../server/build/store/app-reducer').actions;
+	const store = require('../server/store');
+	const appReducer = require('../server/store/app-reducer').actions;
 	const ReduxMixin = PolymerRedux(store);
 
 	/**
@@ -39,7 +39,12 @@
 					supportedDevice.productId === desiredDeviceType.productId;
 			});
 
-			this.$.pages.selected = ret.productName;
+			if (ret) {
+				this.$.pages.selected = ret.productName;
+			} else {
+				this.$.pages.selected = null;
+			}
+
 			return ret;
 		}
 

@@ -1,21 +1,16 @@
 'use strict';
 
 // Packages
-
-var Joi = require('joi');
-
-var _require = require('redux'),
-    combineReducers = _require.combineReducers;
+const Joi = require('joi');
+const {combineReducers} = require('redux');
 
 // Ours
+const connectionTypes = require('../connection/connection-reducer').types;
+const profileTypes = require('../profile/profile-reducer').types;
+const protocolTypes = require('../protocol/protocol-reducer').types;
+const SCHEMAS = require('./schemas');
 
-
-var profileTypes = require('../profile/profile-reducer').types;
-var protocolTypes = require('../protocol/protocol-reducer').types;
-var connectionTypes = require('../connection/connection-reducer').types;
-var SCHEMAS = require('./schemas');
-
-var types = {
+const types = {
 	ACKNOWLEDGE_ERROR: 'ACKNOWLEDGE_ERROR',
 	SET_DESIRED_DEVICE_TYPE: 'SET_DESIRED_DEVICE_TYPE',
 	SELECT_DEVICE: 'SELECT_DEVICE',
@@ -23,20 +18,19 @@ var types = {
 	UPDATE_DETECTED_DEVICES: 'UPDATE_DETECTED_DEVICES'
 };
 
-var actions = {
-	setDesiredDeviceType: function setDesiredDeviceType(vendorId, productId) {
+const actions = {
+	setDesiredDeviceType(vendorId, productId) {
 		return {
 			type: types.SET_DESIRED_DEVICE_TYPE,
 			payload: {
-				vendorId: vendorId,
-				productId: productId
+				vendorId,
+				productId
 			}
 		};
 	},
-	selectDevice: function selectDevice(deviceMetadata) {
-		var _Joi$validate = Joi.validate(deviceMetadata, SCHEMAS.DEVICE),
-		    validationError = _Joi$validate.error;
-
+	selectDevice(deviceMetadata) {
+		console.log('action selectDevice:', deviceMetadata);
+		const {error: validationError} = Joi.validate(deviceMetadata, SCHEMAS.DEVICE);
 		if (validationError) {
 			throw validationError;
 		}
@@ -46,10 +40,8 @@ var actions = {
 			payload: deviceMetadata
 		};
 	},
-	setSupportedDevices: function setSupportedDevices(devices) {
-		var _Joi$validate2 = Joi.validate(devices, Joi.array().items(SCHEMAS.DEVICE)),
-		    validationError = _Joi$validate2.error;
-
+	setSupportedDevices(devices) {
+		const {error: validationError} = Joi.validate(devices, Joi.array().items(SCHEMAS.DEVICE));
 		if (validationError) {
 			throw validationError;
 		}
@@ -59,10 +51,8 @@ var actions = {
 			payload: devices
 		};
 	},
-	updateDetectedDevices: function updateDetectedDevices(devices) {
-		var _Joi$validate3 = Joi.validate(devices, Joi.array().items(SCHEMAS.DEVICE)),
-		    validationError = _Joi$validate3.error;
-
+	updateDetectedDevices(devices) {
+		const {error: validationError} = Joi.validate(devices, Joi.array().items(SCHEMAS.DEVICE));
 		if (validationError) {
 			throw validationError;
 		}
@@ -74,11 +64,8 @@ var actions = {
 	}
 };
 
-var reducer = combineReducers({
-	error: function error() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-		var action = arguments[1];
-
+const reducer = combineReducers({
+	error(state = false, action) {
 		switch (action.type) {
 			case profileTypes.SAVE_PROFILE_REJECTED:
 			case profileTypes.LOAD_PROFILE_REJECTED:
@@ -91,10 +78,7 @@ var reducer = combineReducers({
 				return state;
 		}
 	},
-	supportedDevices: function supportedDevices() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-		var action = arguments[1];
-
+	supportedDevices(state = [], action) {
 		switch (action.type) {
 			case types.SET_SUPPORTED_DEVICES:
 				return action.payload;
@@ -102,10 +86,7 @@ var reducer = combineReducers({
 				return state;
 		}
 	},
-	desiredDeviceType: function desiredDeviceType() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-		var action = arguments[1];
-
+	desiredDeviceType(state = {}, action) {
 		switch (action.type) {
 			case types.SET_DESIRED_DEVICE_TYPE:
 				return action.payload;
@@ -113,10 +94,7 @@ var reducer = combineReducers({
 				return state;
 		}
 	},
-	selectedDevice: function selectedDevice() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-		var action = arguments[1];
-
+	selectedDevice(state = null, action) {
 		switch (action.type) {
 			case types.SELECT_DEVICE:
 				return action.payload;
@@ -124,10 +102,7 @@ var reducer = combineReducers({
 				return state;
 		}
 	},
-	detectedDevices: function detectedDevices() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-		var action = arguments[1];
-
+	detectedDevices(state = [], action) {
 		switch (action.type) {
 			case types.UPDATE_DETECTED_DEVICES:
 				return action.payload;
@@ -135,7 +110,6 @@ var reducer = combineReducers({
 				return state;
 		}
 	},
-
 
 	connection: require('../connection/connection-reducer').reducer,
 	keyConfigs: require('../keyConfigs/keyConfigs-reducer').reducer,
@@ -147,4 +121,4 @@ var reducer = combineReducers({
 
 Object.freeze(types);
 Object.freeze(actions);
-module.exports = { types: types, actions: actions, reducer: reducer };
+module.exports = {types, actions, reducer};

@@ -25,7 +25,7 @@ class XkeysInterface extends BaseDeviceInterface {
 		super();
 
 		const xkeysDevice = new XKeys(devicePath);
-		this._streamDeck = xkeysDevice;
+		this._xkeys = xkeysDevice;
 
 		xkeysDevice.setFrequency(33); // Set the flashing frequency (1 - 255).
 		xkeysDevice.setAllBacklights(false, false); // Turn off all blue LEDs.
@@ -46,9 +46,9 @@ class XkeysInterface extends BaseDeviceInterface {
 
 	destroy() {
 		super.destroy();
-		if (this._streamDeck) {
-			this._streamDeck.removeAllListeners();
-			this._streamDeck = null;
+		if (this._xkeys) {
+			this._xkeys.removeAllListeners();
+			this._xkeys = null;
 		}
 	}
 
@@ -69,15 +69,15 @@ class XkeysInterface extends BaseDeviceInterface {
 
 	async procedureCompleted(keyIndex, successful) {
 		const colorBool = !successful; // If successful, color used will be blue. Else, red.
-		this._streamDeck.setBacklight(keyIndex, true, colorBool); // Turn on the LED.
-		this._streamDeck.setBacklight(keyIndex, false, !colorBool); // Turn off the opposite LED.
+		this._xkeys.setBacklight(keyIndex, true, colorBool); // Turn on the LED.
+		this._xkeys.setBacklight(keyIndex, false, !colorBool); // Turn off the opposite LED.
 
 		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < XkeysInterface.NUM_CONFIRMATION_BLINKS; i++) {
 			await sleep(XkeysInterface.CONFIRMATION_BLINK_INTERVAL);
-			this._streamDeck.setBacklight(keyIndex, false, colorBool);
+			this._xkeys.setBacklight(keyIndex, false, colorBool);
 			await sleep(XkeysInterface.CONFIRMATION_BLINK_INTERVAL);
-			this._streamDeck.setBacklight(keyIndex, true, colorBool);
+			this._xkeys.setBacklight(keyIndex, true, colorBool);
 		}
 		/* eslint-enable no-await-in-loop */
 
@@ -85,11 +85,11 @@ class XkeysInterface extends BaseDeviceInterface {
 	}
 
 	setBlueLED(keyIndex, {on, flashing}) {
-		this._streamDeck.setBacklight(keyIndex, on, false, flashing);
+		this._xkeys.setBacklight(keyIndex, on, false, flashing);
 	}
 
 	setRedLED(keyIndex, {on, flashing}) {
-		this._streamDeck.setBacklight(keyIndex, on, true, flashing);
+		this._xkeys.setBacklight(keyIndex, on, true, flashing);
 	}
 }
 

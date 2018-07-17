@@ -1,7 +1,5 @@
 'use strict';
 
-require('babel-polyfill');
-
 process.on('unhandledRejection', error => {
 	// Will print "unhandledRejection err is not defined"
 	console.log('unhandledRejection', error);
@@ -82,6 +80,6 @@ app.on('ready', async () => {
 	mainWindowState.manage(mainWindow);
 
 	// And load the main.html of the app.
-	const webviewPath = path.resolve(__dirname, '../../client/main.html');
+	const webviewPath = path.resolve(__dirname, '../client/main.html');
 	mainWindow.loadURL(`file:///${webviewPath}`);
 });

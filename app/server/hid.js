@@ -28,6 +28,14 @@ const vendors = new Map([
 				usage: 1,
 				columns: 4,
 				rows: 6,
+				keyIds: [
+					0, 8, 16, 24,
+					1, 9, 17, 25,
+					2, 10, 18, 26,
+					3, 11, 19, 27,
+					4, 12, 20, 28,
+					5, 13, 21, 29
+				],
 				supportsKeyMerging: true,
 				InterfaceClass: XkeysInterface
 			}],
@@ -64,6 +72,22 @@ vendors.forEach((vendor, vendorId) => {
 
 store.dispatch(appActions.setSupportedDevices(supportedDevices));
 
+store.subscribe(handleChange);
+
+function select(state) {
+	return state.desiredDeviceType;
+}
+
+let currentValue;
+function handleChange() {
+	const previousValue = currentValue;
+	currentValue = select(store.getState());
+
+	if (previousValue !== currentValue) {
+		selectNewDesiredDevice(currentValue);
+	}
+}
+
 const sendPressedKeysToMainWindow = debounce(() => {
 	sendToMainWindow(
 		'xkeys:pressedKeys',
@@ -72,6 +96,16 @@ const sendPressedKeysToMainWindow = debounce(() => {
 			[]
 	);
 }, 10);
+
+function selectNewDesiredDevice({vendorId, productId}) {
+	if (activeDevice) {
+		activeDevice.destroy();
+		activeDevice = null;
+	}
+
+	const selectedDeviceMetadata = lookupDeviceMetadata({vendorId, productId});
+	store.dispatch(appActions.selectDevice(selectedDeviceMetadata));
+}
 
 function selectNewDevice({path, vendorId, productId}) {
 	if (activeDevice) {
@@ -152,14 +186,17 @@ function lookupDeviceMetadata({vendorId, productId}) {
 		return;
 	}
 
-	const product = vendor.get(productId);
+	const product = vendor.products.get(productId);
 	if (!product) {
 		return;
 	}
 
 	return {
+		vendorId,
 		vendorName: vendor.name,
-		...product
+		productId,
+		productName: product.name,
+		keyIds: product.keyIds
 	};
 }
 
@@ -236,6 +273,7 @@ function keyIsOnCooldown(keyId) {
 }
 
 module.exports = {
+	selectNewDesiredDevice,
 	selectNewDevice,
 	lookupDeviceMetadata
 };
