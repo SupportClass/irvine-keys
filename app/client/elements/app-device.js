@@ -3,6 +3,7 @@
 	const store = require('../server/store');
 	const appReducer = require('../server/store/app-reducer').actions;
 	const ReduxMixin = PolymerRedux(store);
+	console.log(store.getState());
 
 	/**
 	 * @customElement

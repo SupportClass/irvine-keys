@@ -98,6 +98,10 @@ const sendPressedKeysToMainWindow = debounce(() => {
 }, 10);
 
 function selectNewDesiredDevice({vendorId, productId}) {
+	if (!vendorId || !productId) {
+		return;
+	}
+
 	if (activeDevice) {
 		activeDevice.destroy();
 		activeDevice = null;

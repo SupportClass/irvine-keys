@@ -39,7 +39,6 @@
 
 		raiseButton(e) {
 			e.target.raised = true;
-			console.log(e.target);
 		}
 
 		lowerButton(e) {

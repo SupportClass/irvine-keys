@@ -22,26 +22,25 @@ types = {
 
 const actions = {
 	loadProtocol(filePath) {
-		return function (dispatch) {
-			dispatch({
-				type: types.LOAD_PROTOCOL,
-				payload: protocolLib.loadFromDisk(filePath)
-					.then(({pbjsRoot, servicePath, serviceSummary}) => {
-						const grpcRoot = grpc.loadObject(pbjsRoot);
-						const Service = objectPath.get(grpcRoot, servicePath);
-						references.activeRpcService = Service;
+		return {
+			type: types.LOAD_PROTOCOL,
+			async payload() {
+				const {pbjsRoot, servicePath, serviceSummary} = await protocolLib.loadFromDisk(filePath);
+				console.log(pbjsRoot, servicePath, serviceSummary);
+				const grpcRoot = grpc.loadObject(pbjsRoot);
+				const Service = objectPath.get(grpcRoot, servicePath);
+				references.activeRpcService = Service;
 
-						// TODO: When either the protocol or the connection changes, re-connect.
-						// Or, say that changing protocol will disconnect you from the current server.
+				// TODO: When either the protocol or the connection changes, re-connect.
+				// Or, say that changing protocol will disconnect you from the current server.
 
-						return {
-							filePath,
-							full: pbjsRoot,
-							servicePath,
-							serviceSummary
-						};
-					})
-			});
+				return {
+					filePath,
+					full: pbjsRoot,
+					servicePath,
+					serviceSummary
+				};
+			}
 		};
 	}
 };

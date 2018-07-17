@@ -15,26 +15,6 @@
 
 		static get properties() {
 			return {
-				keys: {
-					type: Array,
-					value() {
-						const keyArray = [];
-						const NUM_ROWS = 8;
-						const NUM_COLUMNS = 10;
-						for (let c = 0; c < NUM_COLUMNS; c++) {
-							for (let r = 0; r < NUM_ROWS; r++) {
-								keyArray.push({
-									index: keyArray.length,
-									gridX: c + 1,
-									gridY: r + 1,
-									gridWidth: 1,
-									gridHeight: 1
-								});
-							}
-						}
-						return keyArray;
-					}
-				},
 				selectedKeys: Array
 			};
 		}

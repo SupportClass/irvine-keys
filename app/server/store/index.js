@@ -7,8 +7,11 @@ const promiseMiddleware = require('redux-promise-middleware').default;
 
 let store; // eslint-disable-line prefer-const
 
+const composeStoreWithMiddleware = applyMiddleware(
+	promiseMiddleware(),
+)(createStore);
+
 const enhancer = compose(
-	// applyMiddleware(promiseMiddleware),
 	// Must be placed after any enhancers which dispatch
 	// their own actions such as redux-thunk or redux-saga
 	electronEnhancer({
@@ -35,6 +38,12 @@ const initialState = {
 	connection: {}
 };
 
-store = createStore(rootReducer, {}, enhancer);
+store = composeStoreWithMiddleware(rootReducer, {}, enhancer);
+
+const path = require('path');
+const protocol = require('../protocol/protocol-reducer');
+store.dispatch(
+	protocol.actions.loadProtocol(path.resolve(__dirname, '../../../IrvineFramework.proto'))
+);
 
 module.exports = store;
