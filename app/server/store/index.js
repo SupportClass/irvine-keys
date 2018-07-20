@@ -30,15 +30,8 @@ store = composeStoreWithMiddleware(rootReducer, initialState, enhancer);
 
 const path = require('path');
 const protocol = require('../protocol/protocol-reducer');
-const connection = require('../connection/connection-reducer');
 store.dispatch(
 	protocol.actions.loadProtocol(path.resolve(__dirname, '../../../example/irvine_framework.proto'))
 );
-
-setTimeout(() => {
-	store.dispatch(
-		connection.actions.connectToServer('127.0.0.1:51402')
-	);
-}, 1000);
 
 module.exports = store;

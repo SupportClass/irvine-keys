@@ -1,15 +1,19 @@
 (function () {
 	'use strict';
 
-	const ipcRenderer = require('electron').ipcRenderer;
-	//const recentConnections = ipcRenderer.sendSync('recentConnections:getSync');
-	const recentConnections = [];
+	// Packages
+	const {ipcRenderer} = require('electron');
+
+	// Ours
+	const store = require('../server/store');
+	const appReducer = require('../server/store/app-reducer').actions;
+	const connectionReducer = require('../server/connection/connection-reducer').actions;
 
 	/**
 	 * @customElement
 	 * @polymer
 	 */
-	class KeysSettings extends Polymer.Element {
+	class KeysSettings extends window.ReduxMixin(Polymer.Element) {
 		static get is() {
 			return 'keys-settings';
 		}
@@ -18,9 +22,13 @@
 			return {
 				recentConnections: {
 					type: Array,
-					value: recentConnections.slice(0, 5)
+					value: []
 				},
-				url: String
+				url: String,
+				connection: {
+					type: Object,
+					statePath: 'connection'
+				}
 			};
 		}
 
@@ -30,7 +38,7 @@
 			];
 		}
 
-		connect() {
+		submit() {
 			ipcRenderer.sendSync('connectionWindow:submit', this.url);
 		}
 

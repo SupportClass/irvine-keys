@@ -130,13 +130,13 @@
 							type="text"
 							value="{{url::input}}"
 							on-keydown="_handleInputKeyDown">
-						<label for="urlInput">NodeCG Server URL</label>
+						<label for="urlInput">gRPC Server IP:Port</label>
 					</div>
 				</div>
 			</div>
 
 			<div id="buttons">
-				<paper-button id="connect" on-tap="connect" raised>Connect</paper-button>
+				<paper-button id="connect" on-tap="submit" raised>Connect</paper-button>
 				<paper-button id="cancel" on-tap="cancel" raised>Cancel</paper-button>
 			</div>
 		</div>

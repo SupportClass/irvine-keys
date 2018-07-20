@@ -3,6 +3,7 @@
 // Ours
 const RpcClient = require('../classes/rpc-client');
 const {references} = require('../util');
+const log = require('electron-log');
 
 // This method of building the types object may seem unusual,
 // but it keeps things DRY while still enabling autocomplete.
@@ -21,11 +22,13 @@ const actions = {
 		return {
 			type: types.CONNECT_TO_SERVER,
 			async payload() {
+				log.debug(`Connecting to gRPC server at "${serverAddress}"...`);
 				const client = new RpcClient({
 					serverAddress,
 					Service: references.activeRpcService
 				});
 				await client.waitForReady();
+				log.debug(`Connection success.`);
 				references.activeRpcClient = client;
 				return client;
 			}

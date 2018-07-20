@@ -7,6 +7,7 @@
 	// Ours
 	const store = require('../server/store');
 	const appReducer = require('../server/store/app-reducer').actions;
+	const connectionReducer = require('../server/connection/connection-reducer').actions;
 	console.log(store.getState());
 
 	Polymer.setPassiveTouchGestures(true); // Added in Polymer v2.1.0

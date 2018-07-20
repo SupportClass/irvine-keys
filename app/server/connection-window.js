@@ -13,6 +13,8 @@ const {BrowserWindow, ipcMain} = require('electron');
 const menu = require('./menu');
 const recentConnections = require('./recent-connections');
 const {references} = require('./util');
+const store = require('./store');
+const connection = require('./connection/connection-reducer');
 
 module.exports.open = function () {
 	const height = calcConnectionWindowHeight(recentConnections);
@@ -74,7 +76,7 @@ ipcMain.on('connectionWindow:close', () => {
 
 ipcMain.on('connectionWindow:submit', (event, url) => {
 	recentConnections.touch(url);
-	nodecg.connect(url);
+	store.dispatch(connection.actions.connectToServer(url));
 	module.exports.close();
 	menu.regenerate();
 });
