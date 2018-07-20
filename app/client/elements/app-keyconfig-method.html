@@ -1,0 +1,77 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="app-radio-button.html">
+
+<dom-module id="app-keyconfig-method">
+	<template>
+		<style include="iron-flex iron-flex-alignment">
+			:host {
+				color: white;
+				font-size: 24px;
+				font-weight: 700;
+				letter-spacing: 0.12px;
+				@apply --layout-horizontal;
+			}
+
+			:host(:not(:last-child)) {
+				margin-bottom: 14px;
+			}
+
+			app-radio-button {
+				margin-right: 18px;
+			}
+
+			#label,
+			.field {
+				width: 349px;
+				height: 62px;
+				padding: 10px;
+				box-sizing: border-box;
+				background: rgba(66, 70, 77, 0.55);
+			}
+
+			#label {
+				padding-left: 17px;
+				cursor: default;
+				@apply --layout-horizontal;
+				@apply --layout-center;
+			}
+
+			#fields {
+				@apply --layout-vertical;
+			}
+
+			.field {
+				margin-top: 14px;
+			}
+
+			vaadin-combo-box {
+				width: 100%;
+			}
+
+			[hidden] {
+				display: none !important;
+			}
+		</style>
+
+		<app-radio-button on-tap="_emitSelect" checked="[[selected]]"></app-radio-button>
+
+		<div class="layout vertical">
+			<div id="label">[[method.name]]</div>
+			<div id="fields" hidden="[[_calcFieldsHidden(method)]]">
+				<template is="dom-repeat" items="[[method.fields]]" as="field">
+					<vaadin-combo-box
+						class="field"
+						items="[[field.options]]"
+						value="[[field.defaultValue]]"
+						allow-custom-value="[[allowCustomValue]]">
+					</vaadin-combo-box>
+				</template>
+			</div>
+		</div>
+	</template>
+
+	<script src="app-keyconfig-method.js"></script>
+</dom-module>

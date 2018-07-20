@@ -5,26 +5,26 @@
 	<template>
 		<style>
 			:host {
+				--gap-size: 4px;
+				--key-size: 58px;
+				background: url("../../img/xk80-background.png");
 				display: block;
+				height: 657px;
 				position: relative;
 				width: 749px;
-				height: 657px;
-				background: url("../../img/xk80-background.png");
-				--key-size: 58px;
-				--gap-size: 4px;
 			}
 
 			#keys {
-				position: absolute;
 				display: grid;
-				top: 81px;
-				left: 67px;
-				width: 616px;
-				height: 492px;
+				filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.81));
+				grid-gap: var(--gap-size);
 				grid-template-columns: var(--key-size);
 				grid-template-rows: var(--key-size);
-				grid-gap: var(--gap-size);
-				filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.81))
+				height: 492px;
+				left: 67px;
+				position: absolute;
+				top: 81px;
+				width: 616px;
 			}
 		</style>
 

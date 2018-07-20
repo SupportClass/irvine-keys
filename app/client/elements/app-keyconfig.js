@@ -7,39 +7,28 @@
 	 * @customElement
 	 * @polymer
 	 */
-	class AppKeyconfig extends Polymer.Element {
+	class AppKeyconfig extends window.ReduxMixin(Polymer.Element) {
 		static get is() {
 			return 'app-keyconfig';
 		}
 
 		static get properties() {
 			return {
-				selectedKeys: Array,
-				availableScenes: Array,
-				availableMethods: Array
+				selectedKeyIds: Array,
+				availableMethods: {
+					statePath(state) {
+						if (!state.protocol || !state.protocol.serviceSummary) {
+							return [];
+						}
+
+						return state.protocol.serviceSummary.availableProcedures;
+					}
+				}
 			};
-		}
-
-		ready() {
-			super.ready();
-
-			//this.availableMethods = ipcRenderer.sendSync('nodecg:getAvailableMethodsSync');
-			//this.availableScenes = ipcRenderer.sendSync('nodecg:getAvailableScenesSync');
-			this.availableMethods = [];
-			this.availableScenes = [];
-
-			ipcRenderer.on('availableMethodsChanged', availableMethods => {
-				this.availableMethods = availableMethods;
-			});
-
-			ipcRenderer.on('availableScenesChanged', availableScenes => {
-				this.availableScenes = availableScenes;
-			});
 		}
 
 		raiseButton(e) {
 			e.target.raised = true;
-			console.log(e.target);
 		}
 
 		lowerButton(e) {
@@ -53,23 +42,23 @@
 		group() {
 			this.dispatchEvent(new CustomEvent('group-keys', {
 				detail: {
-					keys: this.selectedKeys
+					keys: this.selectedKeyIds
 				},
 				bubbles: false,
 				composed: false
 			}));
 		}
 
-		_computeSelectedKeyLabel(selectedKeys) {
-			if (selectedKeys.length === 0) {
+		_computeSelectedKeyLabel(selectedKeyIds) {
+			if (!Array.isArray(selectedKeyIds) || selectedKeyIds.length === 0) {
 				return 'None';
 			}
 
-			if (selectedKeys.length === 1) {
-				return `Key #${selectedKeys[0].index + 1}`;
+			if (selectedKeyIds.length === 1) {
+				return `Key #${selectedKeyIds[0] + 1}`;
 			}
 
-			return `${selectedKeys.length} Keys`;
+			return `${selectedKeyIds.length} Keys`;
 		}
 
 		_areMultipleKeysSelected(selectedKeys) {
@@ -84,7 +73,7 @@
 			return 'No keys selected.';
 		}
 
-		_isGroupRectangular(selectedKeys) {
+		_isGroupRectangular(selectedKeyIds) {
 
 		}
 	}

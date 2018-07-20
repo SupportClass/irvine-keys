@@ -5,29 +5,31 @@
 	<template>
 		<style>
 			:host {
-				display: block;
-				width: 377px;
-				height: 535px;
-				background: url("../../img/xk24-background.png");
-				--key-size: 58px;
 				--gap-size: 4px;
+				--key-size: 58px;
+				background: url("../../img/xk24-background.png");
+				display: block;
+				height: 535px;
+				position: relative;
+				width: 377px;
 			}
 
 			#keys {
-				position: absolute;
-				top: 60px;
-				left: 39px;
 				display: grid;
+				filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.81));
+				grid-gap: var(--gap-size);
 				grid-template-columns: var(--key-size);
 				grid-template-rows: var(--key-size);
-				grid-gap: var(--gap-size);
+				left: 67px;
+				position: absolute;
+				top: 83px;
 			}
 		</style>
 
-		<iron-selector id="keys" multi selectable="app-key">
-			<template is="dom-repeat" items="[[keys]]" as="[[key]]">
+		<iron-selector id="keys" selectable="app-key" multi attr-for-selected="key-id" selected-items="{{_selectedKeyElements}}">
+			<template is="dom-repeat" items="[[_mapKeyConfigs(keyConfigs)]]" as="key">
 				<app-key
-					index="[[key.index]]"
+					key-id="[[key.id]]"
 					grid-x="[[key.gridX]]"
 					grid-y="[[key.gridY]]"
 					grid-width="[[key.gridWidth]]"

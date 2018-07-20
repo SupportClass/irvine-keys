@@ -1,14 +1,13 @@
 (function () {
 	// Ours
-	const store = require('../server/build/store');
-	const appReducer = require('../server/build/store/app-reducer').actions;
-	const ReduxMixin = PolymerRedux(store);
+	const store = require('../server/store');
+	const appReducer = require('../server/store/app-reducer').actions;
 
 	/**
 	 * @customElement
 	 * @polymer
 	 */
-	class AppDevice extends ReduxMixin(Polymer.Element) {
+	class AppDevice extends window.ReduxMixin(Polymer.Element) {
 		static get is() {
 			return 'app-device';
 		}
@@ -24,12 +23,16 @@
 					statePath: 'desiredDeviceType'
 				},
 				availableDevices: Array,
-				selectedDevice: String
+				selectedDevice: String,
+				selectedKeyIds: {
+					type: Array,
+					notify: true
+				}
 			};
 		}
 
 		ready() {
-			this._forwardPropertyNotification = this._forwardPropertyNotification.bind(this);
+			this._updateSelectedKeyIds = this._updateSelectedKeyIds.bind(this);
 			super.ready();
 		}
 
@@ -39,7 +42,12 @@
 					supportedDevice.productId === desiredDeviceType.productId;
 			});
 
-			this.$.pages.selected = ret.productName;
+			if (ret) {
+				this.$.pages.selected = ret.productName;
+			} else {
+				this.$.pages.selected = null;
+			}
+
 			return ret;
 		}
 
@@ -51,25 +59,29 @@
 
 			const oldDevice = this._currentlySelectedDevice;
 			if (oldDevice) {
-				oldDevice.removeEventListener('selected-keys-changed', this._forwardPropertyNotification);
+				oldDevice.removeEventListener('selected-key-ids-changed', this._updateSelectedKeyIds);
 			}
 
 			if (newDevice) {
-				newDevice.addEventListener('selected-keys-changed', this._forwardPropertyNotification);
+				newDevice.addEventListener('selected-key-ids-changed', this._updateSelectedKeyIds);
 			}
 
 			this._currentlySelectedDevice = newDevice;
 		}
 
-		_forwardPropertyNotification(e) {
-			console.log('_forwardPropertyNotification:', e);
+		_updateSelectedKeyIds() {
+			this.selectedKeyIds = this._currentlySelectedDevice.selectedKeyIds;
 		}
 
 		_handleDeviceSelectorChange(e) {
 			if (e.detail.value) {
-				store.dispatch(appReducer.setDesiredDeviceType(e.detail.value.vendorId, e.detail.value.productId));
+				store.dispatch(appReducer.setDesiredDeviceType(
+					e.detail.value.vendorId,
+					e.detail.value.productId,
+					e.detail.value.usage
+				));
 			} else {
-				store.dispatch(appReducer.setDesiredDeviceType(null, null));
+				store.dispatch(appReducer.setDesiredDeviceType(null, null, null));
 			}
 		}
 	}
