@@ -21,7 +21,8 @@ function enumerateDevices() {
 			vendorName: device.manufacturer,
 			productId: device.productId,
 			productName: device.product,
-			path: device.path
+			path: device.path,
+			usage: device.usage
 		};
 	}).filter(device => {
 		const {error: validationError} = Joi.validate(device, SCHEMAS.DEVICE);

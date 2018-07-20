@@ -9,6 +9,7 @@ const SCHEMAS = {
 		vendorName: Joi.string().required(),
 		productId: Joi.number().required(),
 		productName: Joi.string().required(),
+		usage: Joi.number().required(),
 		path: Joi.string(),
 		keyIds: Joi.array()
 	})

@@ -66,7 +66,8 @@ vendors.forEach((vendor, vendorId) => {
 			vendorId,
 			vendorName: vendor.name,
 			productId,
-			productName: product.name
+			productName: product.name,
+			usage: product.usage
 		});
 	});
 });
@@ -98,13 +99,15 @@ const sendPressedKeysToMainWindow = debounce(() => {
 	);
 }, 10);
 
-function selectNewDesiredDevice({vendorId, productId}) {
-	if (!vendorId || !productId) {
+function selectNewDesiredDevice({vendorId, productId, usage}) {
+	if (!vendorId || !productId || !usage) {
 		return;
 	}
 
 	const device = store.getState().detectedDevices.find(device => {
-		return device.vendorId === vendorId && device.productId === productId;
+		return device.vendorId === vendorId &&
+			device.productId === productId &&
+			device.usage === usage;
 	});
 	if (!device) {
 		return;

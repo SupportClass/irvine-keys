@@ -75,9 +75,13 @@
 
 		_handleDeviceSelectorChange(e) {
 			if (e.detail.value) {
-				store.dispatch(appReducer.setDesiredDeviceType(e.detail.value.vendorId, e.detail.value.productId));
+				store.dispatch(appReducer.setDesiredDeviceType(
+					e.detail.value.vendorId,
+					e.detail.value.productId,
+					e.detail.value.usage
+				));
 			} else {
-				store.dispatch(appReducer.setDesiredDeviceType(null, null));
+				store.dispatch(appReducer.setDesiredDeviceType(null, null, null));
 			}
 		}
 	}

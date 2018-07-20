@@ -23,12 +23,13 @@ const actions = {
 			type: types.ACKNOWLEDGE_ERROR
 		};
 	},
-	setDesiredDeviceType(vendorId, productId) {
+	setDesiredDeviceType(vendorId, productId, usage) {
 		return {
 			type: types.SET_DESIRED_DEVICE_TYPE,
 			payload: {
 				vendorId,
-				productId
+				productId,
+				usage
 			}
 		};
 	},
