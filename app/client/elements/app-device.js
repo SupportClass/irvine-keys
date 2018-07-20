@@ -2,7 +2,6 @@
 	// Ours
 	const store = require('../server/store');
 	const appReducer = require('../server/store/app-reducer').actions;
-	console.log(store.getState());
 
 	/**
 	 * @customElement

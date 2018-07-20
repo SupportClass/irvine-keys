@@ -23,6 +23,23 @@
 				@apply --layout-horizontal;
 			}
 
+			#error {
+				background-color: white;
+				padding: 0.5em;
+				border: 2px solid red;
+				@apply --layout-horizontal;
+				@apply --layout-center-center;
+			}
+
+			#error-message {
+				color: #AD0000;
+			}
+
+			#error-ack {
+				@apply --layout-flex-none;
+				margin-left: 1em;
+			}
+
 			app-connection-status {
 				position: absolute;
 				z-index: 1;
@@ -38,9 +55,17 @@
 				padding-top: 99px;
 				padding-left: 3px;
 			}
+
+			[hidden] {
+				display: none !important;
+			}
 		</style>
 
 		<div class="layout vertical center" style="position: relative; padding-left: 8px;">
+			<div id="error" hidden="[[!error]]">
+				<div id="error-message">[[error]]</div>
+				<paper-button id="error-ack" on-tap="ackError" raised>Acknowledge</paper-button>
+			</div>
 			<app-connection-status></app-connection-status>
 			<app-device
 				keys="[[keys]]"

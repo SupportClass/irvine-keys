@@ -1,27 +1,42 @@
 (function () {
 	'use strict';
 
+	// Packages
 	const {ipcRenderer} = require('electron');
+
+	// Ours
+	const store = require('../server/store');
+	const appReducer = require('../server/store/app-reducer').actions;
+	console.log(store.getState());
+
 	Polymer.setPassiveTouchGestures(true); // Added in Polymer v2.1.0
 
 	/**
 	 * @customElement
 	 * @polymer
 	 */
-	class KeysApp extends Polymer.Element {
+	class KeysApp extends window.ReduxMixin(Polymer.Element) {
 		static get is() {
 			return 'keys-app';
 		}
 
 		static get properties() {
 			return {
-				selectedKeys: Array
+				selectedKeys: Array,
+				error: {
+					type: String,
+					statePath: 'error'
+				}
 			};
 		}
 
 		ready() {
 			super.ready();
 			ipcRenderer.send('init');
+		}
+
+		ackError() {
+			store.dispatch(appReducer.acknowledgeError(null, null));
 		}
 
 		_groupKeys(e) {

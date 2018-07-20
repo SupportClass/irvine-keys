@@ -125,8 +125,14 @@ function selectNewDevice({devicePath, vendorId, productId}) {
 	}
 
 	const selectedDeviceMetadata = lookupDeviceMetadata({vendorId, productId});
-	activeDevice = new Device(devicePath, selectedDeviceMetadata);
-	store.dispatch(appActions.selectDevice(selectedDeviceMetadata));
+	try {
+		activeDevice = new Device(devicePath, selectedDeviceMetadata);
+		store.dispatch(appActions.selectDevice(selectedDeviceMetadata));
+	} catch (error) {
+		log.error(error);
+		store.dispatch(appActions.openDeviceError(error));
+		return;
+	}
 
 	const PROGRAMMING_KEY_ID = activeDevice.interface.constructor.PROGRAMMING_KEY_ID;
 	activeDevice.interface.on('keyPressed', keyId => {

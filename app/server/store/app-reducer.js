@@ -12,6 +12,17 @@ const SCHEMAS = require('./schemas');
 const types = require('./app-types');
 
 const actions = {
+	openDeviceError(error) {
+		return {
+			type: types.OPEN_DEVICE_ERROR,
+			payload: error && error.message
+		};
+	},
+	acknowledgeError() {
+		return {
+			type: types.ACKNOWLEDGE_ERROR
+		};
+	},
 	setDesiredDeviceType(vendorId, productId) {
 		return {
 			type: types.SET_DESIRED_DEVICE_TYPE,
@@ -58,6 +69,7 @@ const reducer = combineReducers({
 			case profileTypes.LOAD_PROFILE_REJECTED:
 			case protocolTypes.LOAD_PROTOCOL_REJECTED:
 			case connectionTypes.CONNECT_TO_SERVER_REJECTED:
+			case types.OPEN_DEVICE_ERROR:
 				return action.payload;
 			case types.ACKNOWLEDGE_ERROR:
 				return false;
